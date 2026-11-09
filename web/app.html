@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>医疗知识中枢 · 图谱 · 知识库 · 问答</title>
+<link rel="stylesheet" href="style.css?v=20261109g">
+<link rel="stylesheet" href="bg-theme.css?v=20261109a">
+<script src="bg-theme.js?v=20261109a"></script>
+</head>
+<body class="glass">
+
+<div class="app">
+
+  <!-- ───────────── 顶栏 ───────────── -->
+  <header class="top">
+    <a class="home-link" href="/" title="返回首页">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 18l-6-6 6-6"/></svg>
+      首页
+    </a>
+    <div class="brand">
+      <div class="logo">医</div>
+      <div class="bt">
+        <h1>医疗知识中枢</h1>
+        <p>知识图谱 · 知识库 · 可溯源问答</p>
+      </div>
+    </div>
+
+    <nav class="views" id="viewNav">
+      <span class="vthumb" aria-hidden="true"></span>
+      <button data-view="ask" class="on">问答</button>
+      <button data-view="graph">图谱</button>
+      <button data-view="kb">知识库</button>
+    </nav>
+
+    <div class="gsearch" id="gsearch">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+      <input id="gq" type="text" placeholder="搜索疾病、症状、药品，回车直达图谱" autocomplete="off" spellcheck="false">
+      <kbd>/</kbd>
+      <div class="sug" id="gsug" hidden></div>
+    </div>
+
+    <button class="bg-btn" id="bgBtn" type="button" title="背景与外观">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none" opacity=".28"/></svg>
+      外观
+    </button>
+
+
+  </header>
+
+  <div class="body">
+
+    <!-- ───────────── 左侧上下文（已收起，保留容器以免旧逻辑报错）───────────── -->
+    <aside class="ctx" id="ctx" hidden>
+      <div class="ctx-head">
+        <span>当前上下文</span>
+        <button class="ctx-toggle" id="ctxToggle" title="收起">‹</button>
+      </div>
+      <div class="ctx-list" id="ctxList"></div>
+      <div class="ctx-empty" id="ctxEmpty">
+        问一个问题，或在图谱里点一个节点<br>
+        这里会记住你正在看的实体，切换视图也不会丢
+      </div>
+      <div class="ctx-foot" id="ctxFoot"></div>
+    </aside>
+
+    <!-- ───────────── 主区域 ───────────── -->
+    <main class="main" id="main">
+
+      <!-- 问答 -->
+      <section class="view" id="view-ask">
+        <aside class="hist" id="hist">
+          <div class="hist-head">
+            <button class="hist-new" id="histNew" type="button" title="新建对话">+ 新对话</button>
+          </div>
+          <div class="hist-list" id="histList"></div>
+          <div class="hist-empty" id="histEmpty">还没有对话记录，开始提问吧</div>
+        </aside>
+        <div class="chat">
+          <div class="stream" id="stream"></div>
+          <nav class="msg-nav" id="msgNav" aria-label="对话消息跳转"></nav>
+          <button class="scroll-down" id="scrollDown" type="button" title="跳到最下方" aria-label="跳到最下方">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5v14M6 13l6 6 6-6"/></svg>
+          </button>
+          <div class="composer">
+            <div class="composer-inner">
+              <div class="chips-row" id="chipsRow">
+                <span class="lab">试试</span>
+                <div class="exs" id="examples"></div>
+              </div>
+              <div class="mode-row" id="modeRow">
+                <button class="mode-btn" id="btnDeep" type="button" data-mode="deep" aria-pressed="false">
+                  <span class="mb-dot"></span>深度思考
+                </button>
+                <button class="mode-btn on" id="btnKb" type="button" data-mode="kb" aria-pressed="true">
+                  <span class="mb-dot"></span>仅知识库
+                </button>
+              </div>
+              <div class="input-box">
+                <textarea id="q" rows="1" placeholder="描述症状、用药疑问或检查结果，例如：二甲双胍一天吃多少？"></textarea>
+                <button id="mic" class="mic" type="button" title="语音输入（点击开始说话）"
+                        aria-label="语音输入" aria-pressed="false">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                       stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+                    <path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M8 22h8"/></svg>
+                </button>
+                <button id="send" class="send" title="发送 (Enter)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </button>
+              </div>
+              <div class="listen-bar" id="listenBar" hidden aria-live="polite">
+                <span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+                <span class="lb-txt" id="lbStatus">正在聆听</span>
+                <span class="lb-time" id="lbTime">0 秒</span>
+                <span class="lb-esc" id="lbEsc">说完停顿一秒自动结束 · Esc 取消</span>
+                <button class="lb-stop" id="lbStop" type="button">完成</button>
+                <button class="lb-x" id="lbCancel" type="button" title="取消（Esc）" aria-label="取消">×</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 知识库 -->
+      <section class="view" id="view-kb" hidden>
+        <div class="kb-list">
+          <div class="kb-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+            <input id="kbq" type="text" placeholder="在 5600 余段正文中检索…" autocomplete="off">
+          </div>
+          <div class="kb-filters" id="kbFilters"></div>
+          <div class="kb-meta" id="kbMeta"></div>
+          <div class="kb-results" id="kbResults"></div>
+        </div>
+        <div class="kb-detail" id="kbDetail">
+          <div class="empty-state">
+            <div class="es-icon">文</div>
+            <h3>选一条资料查看全文</h3>
+            <p>左侧检索结果来自疾病章节、药品说明书与临床指南，每条都带来源<br>
+               点开后可看到它关联的图谱实体，并直接用它来提问</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 图谱：部位 → 疾病 → 症状，点即详情 -->
+      <section class="view view-graph" id="view-graph" hidden>
+        <div class="g2-bar">
+          <div class="g2-parts" id="g2Parts"></div>
+          <span class="g2-count" id="g2Count"></span>
+          <div class="g2-acts">
+            <button id="g2TglSide" title="显示 / 收起左侧疾病清单">左栏</button>
+            <button id="g2TglInfo" title="显示 / 收起右侧详情">详情</button>
+            <button id="g2Catalog" title="按身体部位找病（人体图）">人体图</button>
+            <button id="g2Fit" title="回到刚打开图谱时的状态">重置页面</button>
+          </div>
+        </div>
+        <div class="g2-crumb" id="g2Crumb" hidden></div>
+        <div class="g2-body" id="g2Body">
+          <aside class="g2-side" id="g2Side"><div class="g2-side-inner" id="g2SideInner"></div></aside>
+          <div class="g2-split" data-side="left" title="拖动调整宽度"></div>
+          <div class="g2-main">
+            <div id="g2Chart"></div>
+            <div class="g2-hint">单击看详情 · 双击展开它的关系网 · 滚轮缩放 · 拖动平移</div>
+            <div class="g2-loading" id="g2Loading" hidden><span class="spin"></span>正在读取图谱…</div>
+          </div>
+          <div class="g2-split" data-side="right" title="拖动调整宽度"></div>
+          <aside class="g2-info" id="g2Info"><div class="g2-info-inner" id="g2InfoInner"></div></aside>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- 实体抽屉 -->
+<div class="drawer" id="drawer" hidden>
+  <div class="dr-mask" data-close></div>
+  <div class="dr-box" role="dialog" aria-modal="true">
+    <div class="dr-head" id="drHead"></div>
+    <div class="dr-body" id="drBody"></div>
+    <div class="dr-foot" id="drFoot"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- 通用弹窗：二次确认 / 输入编辑（重命名、修改问题） -->
+<div class="modal-mask" id="modalMask" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true">
+    <h3 id="modalTitle">确认</h3>
+    <div class="modal-text" id="modalText"></div>
+    <textarea id="modalInput" rows="3" hidden></textarea>
+    <div class="modal-acts">
+      <button class="btn ghost" id="modalCancel" type="button">取消</button>
+      <button class="btn primary" id="modalOk" type="button">确定</button>
+    </div>
+  </div>
+</div>
+
+<script src="echarts.min.js?v=20261108a"></script>
+<script src="app.js?v=20261110e"></script>
+<script src="views.js?v=20261109f"></script>
+<script src="voice.js?v=20261108a"></script>
+<script src="graphview.js?v=20261109f"></script>
+</body>
+</html>

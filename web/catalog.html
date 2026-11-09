@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>医疗知识图谱 · 主目录</title>
+<style>
+/* 医疗知识图谱 · 主目录 */
+
+:root{
+  --bg:#f4f7fb;
+  --card:#ffffff;
+  --ink:#16202e;
+  --ink2:#3b4757;
+  --muted:#78849a;
+  --faint:#9aa6b8;
+  --line:#e3e9f1;
+  --line2:#eef2f7;
+  --brand:#0f6ab4;
+  --brand-ink:#0d5c9e;
+  --accent:#d9480f;
+  --accent-soft:#fdf1ea;
+  --shadow:0 8px 28px rgba(23,43,77,.08);
+  --shadow-sm:0 2px 8px rgba(23,43,77,.05);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:"Inter","Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  font-size:13px;-webkit-font-smoothing:antialiased;overflow:hidden;
+}
+button{font-family:inherit}
+
+.app{height:100vh;display:flex;flex-direction:column}
+
+/* ---------------- 顶栏 ---------------- */
+.top{
+  flex:none;display:flex;align-items:center;gap:26px;
+  padding:14px 26px;background:var(--card);border-bottom:1px solid var(--line);
+  z-index:30;
+}
+.brand{display:flex;align-items:center;gap:11px;flex:none}
+.logo{
+  width:40px;height:40px;border-radius:12px;flex:none;display:grid;place-items:center;
+  background:linear-gradient(145deg,#1a7fd4,#0d5c9e);color:#fff;
+  font-weight:700;font-size:19px;letter-spacing:.5px;
+  box-shadow:0 5px 14px rgba(15,106,180,.26);
+}
+.bt h1{margin:0;font-size:16px;font-weight:650;letter-spacing:.3px}
+.bt p{margin:3px 0 0;font-size:11.5px;color:var(--muted);letter-spacing:.2px}
+
+.stats{display:flex;align-items:center;gap:0;flex:none}
+.stats span{
+  display:flex;flex-direction:column;align-items:center;gap:1px;padding:0 16px;
+  border-left:1px solid var(--line2);
+}
+.stats span:first-child{border-left:0;padding-left:4px}
+.stats b{font-size:16px;font-weight:700;color:var(--brand-ink);font-variant-numeric:tabular-nums;letter-spacing:.2px}
+.stats i{font-style:normal;font-size:10.5px;color:var(--faint);letter-spacing:.6px}
+
+.search{position:relative;margin-left:auto;width:min(360px,34vw);flex:none}
+
+/* 主目录是所有入口的起点，右上角留一个去 AI 问答的门 */
+.hub-link{
+  flex:none;display:inline-flex;align-items:center;gap:7px;
+  height:34px;padding:0 12px;border-radius:9px;border:1px solid var(--line);
+  background:var(--card);color:var(--ink2);font-size:12.5px;font-weight:600;
+  text-decoration:none;white-space:nowrap;transition:.16s;box-shadow:var(--shadow-sm);
+}
+.hub-link:hover{border-color:#bcd4ea;background:#f5faff;color:var(--brand)}
+.hl-dot{width:6px;height:6px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 3px rgba(22,163,74,.13)}
+.hl-a{color:var(--faint);font-weight:400}
+.hub-link:hover .hl-a{color:var(--brand)}
+@media (max-width:1240px){.hub-link{display:none}}
+.search input{
+  width:100%;padding:9px 40px 9px 33px;border:1px solid var(--line);border-radius:10px;
+  background:#fbfcfe;font-size:12.5px;color:var(--ink);outline:none;transition:.16s;font-family:inherit;
+}
+.search input::placeholder{color:#a4b0c2}
+.search input:focus{border-color:#9ec9ea;background:#fff;box-shadow:0 0 0 3px rgba(15,106,180,.08)}
+.sicon{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:#9aa6b8;pointer-events:none}
+.search kbd{
+  position:absolute;right:9px;top:50%;transform:translateY(-50%);
+  font-family:inherit;font-size:10.5px;color:#a4b0c2;background:#f2f5f9;
+  border:1px solid var(--line);border-radius:5px;padding:1px 6px;pointer-events:none;
+}
+.search input:focus ~ kbd{opacity:0}
+
+.sug{
+  position:absolute;left:0;right:0;top:44px;background:#fff;border:1px solid var(--line);
+  border-radius:11px;box-shadow:var(--shadow);max-height:330px;overflow:auto;z-index:60;padding:5px;
+}
+.sug[hidden]{display:none}
+.sug .sg-h{font-size:10.5px;color:var(--faint);letter-spacing:.8px;padding:7px 9px 4px}
+.sug .sg{
+  display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:8px;cursor:pointer;
+}
+.sug .sg:hover,.sug .sg.on{background:#f4f9fd}
+.sug .sg .d{width:7px;height:7px;border-radius:50%;flex:none}
+.sug .sg .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px}
+.sug .sg .t{font-size:10.5px;color:var(--faint);flex:none}
+.sug .sg .go{font-size:11px;color:#c3ccd9;flex:none}
+.sug .sg:hover .go{color:var(--brand)}
+.sug .empty{padding:16px 10px;text-align:center;color:var(--faint);font-size:12px}
+
+/* ---------------- 主体 ---------------- */
+.main{
+  flex:1;min-height:0;display:grid;grid-template-columns:minmax(400px,44%) 1fr;
+}
+
+/* 左：人体 */
+.hero{
+  display:flex;flex-direction:column;min-height:0;
+  padding:16px 22px 18px;background:var(--card);
+  border-right:1px solid var(--line);
+}
+.hero-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex:none}
+.hero-top h2{margin:0;font-size:14.5px;font-weight:650;letter-spacing:.4px}
+.hero-top p{margin:4px 0 0;font-size:11.5px;color:var(--muted)}
+
+.seg{position:relative;display:flex;background:#f2f5f9;border-radius:8px;padding:2px;flex:none}
+.seg-thumb{
+  position:absolute;left:2px;top:2px;width:0;height:calc(100% - 4px);
+  border-radius:6px;background:#fff;box-shadow:0 1px 4px rgba(23,43,77,.12);
+  transition:transform .34s cubic-bezier(.34,1.16,.64,1),width .34s cubic-bezier(.34,1.16,.64,1);
+  pointer-events:none;
+}
+.seg button{
+  position:relative;z-index:1;
+  border:0;background:transparent;padding:5px 13px;border-radius:6px;
+  font-size:11.5px;color:var(--muted);cursor:pointer;transition:color .18s;
+}
+.seg button.on{color:var(--ink)}
+
+.stage{flex:1;min-height:0;display:grid;place-items:center;padding:4px 0 2px}
+.stage svg{width:100%;height:100%;display:block;overflow:visible}
+
+/* SVG 内元素 */
+.stage .lead{stroke:#bcc7d6;stroke-width:1.1;stroke-dasharray:3 2.6;fill:none}
+.stage g.zone ellipse{
+  fill:rgba(15,106,180,.10);stroke:rgba(15,106,180,.28);
+  stroke-width:1.1;stroke-dasharray:4 3;opacity:0;transition:opacity .2s;
+}
+.stage g.zone.on ellipse{opacity:1}
+.stage g.sys{cursor:pointer}
+/* 每个系统一套色相：圆点、引线、文字、右侧卡片色条共用 --c，
+   这样「图上头顶那个 104」和「右边第 3 张卡」靠颜色就能对上，不用读字。 */
+.stage g.sys .dot{fill:var(--c,var(--accent));stroke:#fff;stroke-width:2.6;transition:stroke-width .16s,filter .16s}
+.stage g.sys .cnt{
+  fill:#fff;font-weight:700;text-anchor:middle;pointer-events:none;
+  font-variant-numeric:tabular-nums;
+}
+.stage g.sys .lead{stroke:var(--c,var(--accent));stroke-opacity:.45}
+.stage g.sys .pill{fill:#fff;stroke:var(--c,var(--accent));stroke-opacity:.5;stroke-width:1.2;transition:.16s}
+.stage g.sys .nm{fill:#3a4657;font-weight:600;transition:fill .16s}
+.stage g.sys .pd{fill:#cfd8e4}
+
+.stage g.sys:hover .dot,
+.stage g.sys.hot .dot{stroke-width:4;filter:drop-shadow(0 2px 6px rgba(23,43,77,.28))}
+.stage g.sys:focus-visible{outline:none}
+.stage g.sys:focus-visible .pill{stroke:var(--c,#0f6ab4);stroke-width:1.8}
+.stage g.sys:hover .pill,
+.stage g.sys.hot .pill{stroke:var(--c,#0f6ab4);fill:#fff}
+.stage g.sys:hover .nm,
+.stage g.sys.hot .nm{fill:var(--c,#b93c0a)}
+/* 目录里点「定位」时，圆点脉冲两下 */
+@keyframes sysping{0%,100%{stroke-width:4}50%{stroke-width:11;stroke-opacity:.3}}
+.stage g.sys.ping .dot{animation:sysping 1.2s ease-in-out 2}
+
+.allbtn{
+  flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  width:100%;padding:10px 14px;margin-top:10px;cursor:pointer;
+  border:1px dashed #d3ddea;border-radius:10px;background:#fafcfe;
+  font-size:12px;color:var(--ink2);transition:.16s;
+}
+.allbtn:hover{border-color:#a9c9e2;background:#f4f9fd;color:var(--brand-ink)}
+.ab-arrow{color:#b9c4d4;font-size:13px}
+.allbtn:hover .ab-arrow{color:var(--brand)}
+
+/* 右：目录 */
+.dir{min-height:0;overflow-y:auto;padding:18px 26px 30px 24px}
+.dir::-webkit-scrollbar{width:8px}
+.dir::-webkit-scrollbar-thumb{background:#dde4ee;border-radius:4px}
+.dir::-webkit-scrollbar-track{background:transparent}
+
+.dir-head{margin-bottom:16px}
+.dir-head h2{margin:0;font-size:15px;font-weight:650;letter-spacing:.4px}
+.dir-head p{margin:5px 0 0;font-size:11.5px;color:var(--muted)}
+
+.block{margin-bottom:20px}
+.bh{display:flex;align-items:baseline;gap:10px;padding-bottom:8px;margin-bottom:11px;border-bottom:1px solid var(--line2)}
+.bh h3{
+  margin:0;font-size:11.5px;font-weight:700;color:var(--ink2);
+  letter-spacing:1.4px;
+}
+.bh span{font-size:10.5px;color:var(--faint);margin-left:auto;letter-spacing:.2px}
+.bh b{color:#8b98aa;font-weight:600}
+/* 数字口径说明：908（部位）+ 221（全身）＝ 顶部「病种」总数，不写出来会让人以为对不上 */
+.dir-note{margin:10px 2px 0;font-size:10.5px;color:var(--faint);line-height:1.7}
+.dir-note b{color:var(--ink2);font-weight:600;font-variant-numeric:tabular-nums}
+
+/* 部位卡片 */
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.card{
+  --c:var(--accent);
+  display:flex;flex-direction:column;gap:3px;text-align:left;position:relative;
+  padding:11px 54px 11px 16px;border:1px solid var(--line);border-radius:11px;
+  background:var(--card);cursor:pointer;transition:.16s;min-width:0;
+}
+/* 左侧色条 = 该系统的色相，和人体图圆点同色 */
+.card::before{
+  content:'';position:absolute;left:0;top:13px;bottom:13px;width:3px;
+  border-radius:0 3px 3px 0;background:var(--c);opacity:.85;
+}
+.card:hover{border-color:#b8d4ea;box-shadow:0 6px 18px rgba(23,43,77,.07);transform:translateY(-1px)}
+.card:active{transform:translateY(0)}
+.card .ch{display:flex;align-items:baseline;gap:7px;min-width:0}
+.card .cn{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .cc{font-size:11px;color:var(--c);font-weight:700;font-variant-numeric:tabular-nums;flex:none}
+.card .cg{
+  font-size:10.5px;color:var(--faint);white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;letter-spacing:.1px;
+}
+.card .ca{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  color:#ccd5e2;font-size:13px;transition:.16s;
+}
+.card:hover .ca{color:var(--brand);transform:translate(2px,-50%)}
+/* 「在人体图上定位」：平时淡显，卡片悬停时加深——常态隐藏的话没人会发现它 */
+.card .loc{
+  position:absolute;right:29px;top:50%;transform:translateY(-50%);
+  width:21px;height:21px;line-height:20px;text-align:center;border-radius:6px;
+  font-size:11px;color:var(--faint);opacity:.45;transition:.16s;
+}
+.card:hover .loc{opacity:1}
+.card .loc:hover{background:var(--c);color:#fff;opacity:1}
+/* 「覆盖全身」用同一套网格，只是灰调、没有代表病名，和上面保持对齐 */
+.card.dim{background:transparent;border-color:var(--line2)}
+.card.dim .cn{font-size:12.5px;font-weight:600;color:var(--ink2)}
+.card.dim .cg{color:var(--faint)}
+.card.dim::before{top:12px;bottom:12px;opacity:.5}
+/* 人体圆点悬停时，对应的卡片同步亮起 */
+.card.hi{border-color:#b8d4ea;background:#fbfdff;box-shadow:0 6px 18px rgba(23,43,77,.07);transform:translateY(-1px)}
+.card.hi .ca{color:var(--brand);transform:translate(2px,-50%)}
+
+/* 全身性系统也用卡片网格（.card.dim），不再单独一套「行」样式：
+   同一页里两种密度会让右侧重心失衡，也逼用户重新学一遍排版规则。 */
+
+/* 模块 */
+.mods{display:flex;flex-direction:column;gap:8px}
+.mod{
+  display:flex;align-items:center;gap:12px;text-align:left;width:100%;
+  padding:11px 13px;border:1px solid var(--line);border-radius:11px;background:var(--card);
+  cursor:pointer;transition:.16s;text-decoration:none;color:inherit;
+}
+.mod:hover{border-color:#b8d4ea;box-shadow:0 6px 18px rgba(23,43,77,.07);transform:translateY(-1px)}
+.mod .mi{
+  width:32px;height:32px;border-radius:9px;flex:none;display:grid;place-items:center;
+  font-size:14px;
+}
+.mod .mt{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.mod .mn{font-size:12.5px;font-weight:600;color:var(--ink)}
+.mod .md{font-size:10.5px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mod .ma{color:#ccd5e2;font-size:13px;flex:none;transition:.16s}
+.mod:hover .ma{color:var(--brand);transform:translateX(2px)}
+.mod.soon{cursor:default}
+.mod.soon:hover{border-color:var(--line);box-shadow:none;transform:none}
+.mod.soon .ma{color:#e3e9f1}
+
+.foot{margin:22px 0 0;font-size:10.5px;line-height:1.8;color:#a3aebf}
+.foot b{color:#8b98aa;font-weight:600}
+
+/* ---------------- 弹层 ---------------- */
+.modal[hidden]{display:none}
+.modal{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:24px}
+.modal-mask{position:absolute;inset:0;background:rgba(16,26,40,.34);backdrop-filter:blur(2px)}
+.modal-box{
+  position:relative;width:min(520px,100%);background:#fff;border-radius:16px;
+  padding:22px 24px 20px;box-shadow:0 24px 64px rgba(16,26,40,.22);
+  animation:pop .18s ease-out;
+}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}
+.modal-box h3{margin:0 0 8px;font-size:15px}
+.modal-box p{margin:0 0 14px;font-size:12px;line-height:1.75;color:var(--muted)}
+.modal-box pre{
+  margin:0 0 16px;padding:12px 14px;border-radius:9px;background:#f6f8fb;
+  border:1px solid var(--line);font-size:11.5px;line-height:1.9;color:#2f3c4e;
+  font-family:ui-monospace,Consolas,"Cascadia Mono",monospace;
+  white-space:pre-wrap;word-break:break-all;
+}
+.modal-x{
+  position:absolute;right:14px;top:13px;border:0;background:transparent;
+  color:#b3becd;font-size:14px;cursor:pointer;padding:4px;line-height:1;
+}
+.modal-x:hover{color:var(--ink2)}
+.modal-act{display:flex;gap:9px}
+.btn-primary,.btn-ghost{
+  padding:8px 16px;border-radius:8px;font-size:12px;cursor:pointer;transition:.15s;border:1px solid transparent;
+}
+.btn-primary{background:var(--brand);color:#fff;box-shadow:0 3px 10px rgba(15,106,180,.22)}
+.btn-primary:hover{background:var(--brand-ink)}
+.btn-ghost{background:#fff;border-color:var(--line);color:var(--muted)}
+.btn-ghost:hover{border-color:#cfd9e6;color:var(--ink2)}
+
+.toast{
+  position:fixed;left:50%;bottom:34px;transform:translate(-50%,10px);
+  background:#22303f;color:#fff;font-size:12px;padding:9px 18px;border-radius:9px;
+  opacity:0;pointer-events:none;transition:.22s;z-index:120;box-shadow:0 10px 30px rgba(16,26,40,.24);
+}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ---------------- 动效 ---------------- */
+
+/* 目录条目：入场时自下往上浮出，逐个错开 */
+@keyframes riseIn{from{opacity:0;transform:translateY(9px)}}
+.card,.row,.mod{animation:riseIn .44s cubic-bezier(.2,.7,.3,1) backwards;animation-delay:calc(var(--i,0)*32ms)}
+
+/* 人体图整块淡入，随后标记从头顶往脚下依次出现 */
+@keyframes stageIn{from{opacity:0;transform:scale(.975) translateY(8px)}}
+.stage{animation:stageIn .6s cubic-bezier(.2,.7,.3,1) backwards}
+
+@keyframes markIn{from{opacity:0}}
+@keyframes dotIn{from{transform:scale(0)}}
+.stage g.sys{
+  animation:markIn .38s ease-out backwards;
+  animation-delay:calc(var(--d,0)*1ms + 170ms);
+}
+.stage g.sys .dot{
+  transform-box:fill-box;transform-origin:50% 50%;
+  animation:dotIn .46s cubic-bezier(.2,.9,.3,1.2) backwards;
+  animation-delay:calc(var(--d,0)*1ms + 170ms);
+}
+
+/* 扫描线经过时，圆点跳一下 */
+@keyframes dotPulse{
+  0%{transform:scale(1)}
+  26%{transform:scale(1.34)}
+  100%{transform:scale(1)}
+}
+.stage g.sys.pulse .dot{animation:dotPulse .55s cubic-bezier(.2,.8,.3,1)}
+
+/* 兜底：入场动画无论如何都要在 1.5s 内归位，不留透明元素 */
+body.revealed .card,body.revealed .row,body.revealed .mod,
+body.revealed .stage,
+body.revealed .stage g.sys,
+body.revealed .stage g.sys:not(.pulse) .dot{animation:none}
+
+/* 换页：当前页散开淡出，靠遮罩盖住加载间隙 */
+.top,.stage,.allbtn,.dir{
+  transition:opacity .36s cubic-bezier(.4,0,.2,1),transform .44s cubic-bezier(.4,0,.2,1);
+}
+body.leaving .top{opacity:0;transform:translateY(-10px)}
+body.leaving .stage{opacity:0;transform:scale(1.07)}
+body.leaving .allbtn{opacity:0;transform:translateY(6px)}
+body.leaving .dir{opacity:0;transform:translateX(-18px)}
+
+.veil{
+  position:fixed;inset:0;z-index:100;display:grid;place-items:center;
+  background:rgba(244,247,251,.95);backdrop-filter:blur(3px);
+  opacity:0;pointer-events:none;transition:opacity .3s ease .05s;
+}
+body.leaving .veil{opacity:1}
+.veil-in{display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--ink2)}
+.veil-in b{font-size:13.5px;font-weight:600;letter-spacing:.3px}
+.veil-in i{font-style:normal;font-size:11.5px;color:var(--faint);letter-spacing:.2px}
+.spin{
+  width:26px;height:26px;border-radius:50%;
+  border:2.5px solid #dbe6f1;border-top-color:var(--brand);
+  animation:spin .78s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.ripple{
+  position:fixed;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;
+  background:radial-gradient(circle,rgba(217,72,15,.45),rgba(217,72,15,0) 68%);
+  pointer-events:none;z-index:96;
+  transition:transform .68s cubic-bezier(.2,.7,.3,1),opacity .68s ease-out;
+}
+.ripple.go{transform:scale(24);opacity:0}
+
+@media (prefers-reduced-motion: reduce){
+  .card,.row,.mod,.stage,.stage g.sys,.stage g.sys .dot{
+    animation:none!important;opacity:1!important;
+  }
+  .top,.stage,.allbtn,.dir,.seg-thumb{transition:none!important}
+  .spin{animation:none}
+  .ripple{display:none}
+}
+
+/* ---------------- 窄屏 ---------------- */
+@media (max-width:1080px){
+  body{overflow:auto}
+  .app{height:auto;min-height:100vh}
+  .top{flex-wrap:wrap;gap:14px}
+  .search{width:100%;margin-left:0;order:3}
+  .main{grid-template-columns:1fr}
+  .hero{border-right:0;border-bottom:1px solid var(--line)}
+  .stage{height:min(72vh,620px)}
+  .dir{overflow:visible}
+  .stats span{padding:0 12px}
+}
+@media (max-width:560px){
+  .cards{grid-template-columns:1fr}
+  .top{padding:12px 16px}
+  .hero,.dir{padding:14px 16px}
+}
+
+</style>
+<link rel="stylesheet" href="bg-theme.css?v=20261109a">
+<script src="bg-theme.js?v=20261109a"></script>
+<style>
+/* ---------- 背景与毛玻璃：与首页/内页共用同一套背景设置 ---------- */
+body.glass{--line:rgba(20,38,66,.10);--line2:rgba(20,38,66,.055);background:transparent}
+/* 顶栏与左侧人体图保持较实，右栏让出背景 */
+body.glass .top{
+  background:rgba(255,255,255,.74);
+  backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2);
+  border-bottom-color:rgba(20,38,66,.08);
+}
+body.glass .hero{
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(16px) saturate(1.1);-webkit-backdrop-filter:blur(16px) saturate(1.1);
+}
+/* 右栏：半透明白，花纹透得出来 */
+body.glass .dir{background:rgba(255,255,255,.28)}
+/* 目录条目做成薄玻璃，文字压在花纹上也不虚 */
+body.glass .card,body.glass .mod{background:rgba(255,255,255,.88)}
+body.glass .card:hover,body.glass .mod:hover{background:rgba(255,255,255,.96)}
+/* 「覆盖全身」的卡比部位卡淡一档，保住层级，但仍在同一套网格里 */
+body.glass .card.dim{background:rgba(255,255,255,.46)}
+body.glass .card.dim:hover{background:rgba(255,255,255,.9)}
+body.glass .allbtn{background:rgba(255,255,255,.72);border-color:rgba(20,38,66,.16)}
+body.glass .dir::-webkit-scrollbar-thumb{background:rgba(20,38,66,.18)}
+/* 深色背景 */
+body.glass.dark-bg{
+  --ink:#e7eef7;--ink2:#c4cfdd;--muted:#9aa9bb;--faint:#7f8d9f;
+  --card:rgba(26,35,48,.82);--line:rgba(255,255,255,.10);--line2:rgba(255,255,255,.06);
+  --brand:#5aa8e8;--brand-ink:#9fd0f7;--accent:#e0a35c;
+}
+body.glass.dark-bg .top{background:rgba(20,28,40,.72);border-bottom-color:rgba(255,255,255,.09)}
+body.glass.dark-bg .hero{background:rgba(20,28,40,.86)}
+body.glass.dark-bg .dir{background:rgba(14,20,28,.34)}
+body.glass.dark-bg .card,body.glass.dark-bg .mod{background:rgba(28,38,52,.9)}
+body.glass.dark-bg .card.dim{background:transparent}
+body.glass.dark-bg .allbtn{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16)}
+/* 深色底上把系统色提亮一档，否则蓝紫系在深灰上发闷 */
+body.glass.dark-bg .card .cc{color:color-mix(in srgb, var(--c) 68%, #fff)}
+body.glass.dark-bg .stage g.sys .pill{fill:rgba(28,38,52,.94);stroke:rgba(255,255,255,.16)}
+body.glass.dark-bg .stage g.sys .nm{fill:#dbe4ef}
+body.glass.dark-bg .stage g.sys:hover .pill,
+body.glass.dark-bg .stage g.sys.hot .pill{fill:rgba(28,38,52,1)}
+body.glass.dark-bg .stage g.sys:hover .nm,
+body.glass.dark-bg .stage g.sys.hot .nm{fill:color-mix(in srgb, var(--c) 68%, #fff)}
+body.glass.dark-bg .seg{background:rgba(255,255,255,.08)}
+body.glass.dark-bg .seg-thumb{background:rgba(255,255,255,.18);box-shadow:0 1px 4px rgba(0,0,0,.4)}
+body.glass.dark-bg .seg button{color:#b6c3d4}
+body.glass.dark-bg .seg button.on{color:#eaf1f9}
+body.glass.dark-bg .bgbtn{background:rgba(255,255,255,.08);color:#c4cfdd;border-color:rgba(255,255,255,.14)}
+body.glass.dark-bg .hub-link{background:rgba(255,255,255,.08);color:#c4cfdd;border-color:rgba(255,255,255,.14)}
+/* 搜索框原本写死浅色底，深色下是一块刺眼的白 */
+body.glass.dark-bg .search input{background:rgba(28,38,52,.9);color:var(--ink);border-color:rgba(255,255,255,.14)}
+body.glass.dark-bg .search input::placeholder{color:#7f8d9f}
+body.glass.dark-bg .search input:focus{background:rgba(28,38,52,1);border-color:rgba(90,168,232,.55);box-shadow:0 0 0 3px rgba(90,168,232,.14)}
+body.glass.dark-bg .search kbd{background:rgba(255,255,255,.08);color:#8b98aa}
+/* 人体剪影是浅色 PNG，深色底上会晃眼，压一点亮度 */
+body.glass.dark-bg .stage image.bd{filter:brightness(.82) saturate(.92)}
+/* 顶栏「外观」按钮 */
+.bgbtn{
+  display:flex;align-items:center;gap:5px;flex:none;
+  padding:6px 11px;border-radius:8px;border:1px solid var(--line);
+  font-size:12px;color:var(--muted);background:var(--card);cursor:pointer;transition:.15s;
+}
+.bgbtn:hover{background:var(--brand-soft,#eef5fb);color:var(--brand-ink);border-color:#cfe3f6}
+.bgbtn svg{width:14px;height:14px}
+</style>
+</head>
+<body class="glass">
+<div class="app">
+
+  <header class="top">
+    <div class="brand">
+      <div class="logo">医</div>
+      <div class="bt">
+        <h1>医疗知识图谱</h1>
+        <p>主目录 · 从身体进入图谱</p>
+      </div>
+    </div>
+
+    <div class="stats">
+      <span><b id="stEnt">—</b><i>实体</i></span>
+      <span><b id="stRel">—</b><i>关系</i></span>
+      <span><b id="stDis">—</b><i>病种</i></span>
+    </div>
+
+    <div class="search" id="searchWrap">
+      <svg class="sicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+      <input id="q" type="text" placeholder="搜索病种、症状、药品…" autocomplete="off" spellcheck="false">
+      <kbd>/</kbd>
+      <div class="sug" id="sug" hidden></div>
+    </div>
+
+    <button class="bgbtn" id="bgBtn" type="button" title="背景与外观">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none" opacity=".28"/></svg>
+      外观
+    </button>
+
+    <a class="hub-link" href="index.html#ask" title="进入 AI 问答：基于图谱与知识库作答，每句可溯源到原文">
+      <span class="hl-dot"></span>AI 问答<span class="hl-a">→</span>
+    </a>
+  </header>
+
+  <main class="main">
+
+    <section class="hero">
+      <div class="hero-top">
+        <div>
+          <h2>按部位进入</h2>
+          <p>圆点数字是该系统下的病种数</p>
+        </div>
+        <div class="seg" id="seg">
+          <span class="seg-thumb" aria-hidden="true"></span>
+          <button class="on" data-sex="m" title="仅切换人形轮廓：病种数据不区分性别">男</button>
+          <button data-sex="f" title="仅切换人形轮廓：病种数据不区分性别">女</button>
+        </div>
+      </div>
+
+      <div class="stage" id="stage">
+        <svg id="svg" viewBox="0 0 660 812" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+
+      <button class="allbtn" id="allBtn">
+        <span>不经部位，直接打开全量图谱</span>
+        <span class="ab-arrow">→</span>
+      </button>
+    </section>
+
+    <section class="dir">
+
+      <div class="dir-head">
+        <h2>目录</h2>
+        <p>点任意条目，打开以它为中心的一跳邻域图谱</p>
+      </div>
+
+      <div class="block">
+        <div class="bh"><h3>按身体部位</h3><span>10 个系统 · <b id="cBody">—</b> 个病种</span></div>
+        <div class="cards" id="cards"></div>
+      </div>
+
+      <div class="block">
+        <div class="bh"><h3>覆盖全身</h3><span>6 个系统 + 未标注归属 · <b id="cSys">—</b> 个病种</span></div>
+        <div class="cards" id="rows"></div>
+        <p class="dir-note" id="sumNote"></p>
+      </div>
+
+      <div class="block">
+        <div class="bh"><h3>其它模块</h3><span>同一份数据的另外三种用法</span></div>
+        <div class="mods" id="mods"></div>
+      </div>
+
+      <p class="foot">
+        数据源：<b id="fSrc">medical_kg.db</b> · 构建于 <b id="fDate">—</b>　|　人体图为示意图，仅用于按系统归类，不表示具体器官位置
+      </p>
+
+    </section>
+  </main>
+</div>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-mask" data-close></div>
+  <div class="modal-box" role="dialog" aria-modal="true">
+    <button class="modal-x" data-close aria-label="关闭">✕</button>
+    <h3 id="mTitle">标题</h3>
+    <p id="mDesc"></p>
+    <pre id="mCode"></pre>
+    <div class="modal-act">
+      <button class="btn-primary" id="mCopy">复制命令</button>
+      <button class="btn-ghost" data-close>关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="veil" id="veil" aria-hidden="true">
+  <div class="veil-in">
+    <span class="spin"></span>
+    <b>正在展开知识图谱</b>
+    <i>载入该节点的一跳邻域…</i>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>window.__PORTAL__ = {"stats":{"ent":1702,"rel":6060,"dis":1129,"bodyDis":908,"sysDis":221},"body":{"m":"data:image/png;base64,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","f":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAALoCAYAAABWJqP9AABPuElEQVR42u2dL1QryfO3vyYmJiYmIiYmJiYmBoPBIDAYDAaDwWAwGAQGg8FgMBgMBhGDifjFRGwMJiYmIue8JyYmJua+md3P7PadOxOSkJnunnmec+qwf7iX0NNTn67q6ur//Q8gp/z1f/+vtLLWyhorq62sbPy/5squ9d+PVva5sv7KBiv7kk1kU9lC9kv/freyi5UdrqzOiAMA5EdAyhKKQEA6+ufjlZ1JPF4lHANZ3xCPsWxmmCkgC31f8OefV3YjIaox8gAA+RCRmiKR25W9KaL4JRtLBIbG11A4pjGRhykgUVtIgF4VmQQiVV9ZhacAAOBX5FHX11M59M8E5z+TSMwSoo1NxMO0+cpGK/uQaJ0o+glSaVWeDgCAu8LRXtnByi4VDQwUdXzn/LcViu/+rkBEuop6Hld2JREp86QAANwTkLac9LUcd5CKWv5QDH5qE4nYq0SkIaFDSAAAHIo+Do3N8Z6xf/HLsi0lIk9B1RZPCwDAHfGoKG11p72HL+1FuCAe5t5IWLF1y1MDALAvHg2dxXhUFdXSIdGI2xuZKbUWpNiqVGkBANiNPp5UQrtwWDziqr8e2QsBALAnIE9KW408Eo9QQIIo5IqnCACQvXgcKvIYexZ9hOmsnqKQS06wAwBkKyBvHgpHNAoZ6vc45okCAGQjHk2Vxv7KgQXlxm88VQCAbASkrdLYXzmxIBI54MkCAKQrHjX1mfqVIxurAWOJJwwAkJ6AvOVMPML9kDs20wEA0hOPRqQle15sLmE84SkDAKQjIEc52/swra+SXg4XAgCkICB3jrcr+YkFhyEf2EwHANivcJS0Ou/lVDzCrr3BHSKXPHEAgP0JSF2dbGc5FpCwGiv4Pes8dQCA/QhIJ0cHB7+zT+4NAQDYn4CcaXVeBAEZay+EVu8AAD8Uj7Yc6qwgAvJLHYZJYwEA7CF99VQwARkgIAAAPxeQhgRkXiABGXIqHQDg5wJSVWXSvGARCAICAPBDATmUgEwKFoE0efoAAD8XkWfdm4GAAADAxuIR7IG8ICAAALCtgFyqxceiYALS4ukDAOwuHmWdiSiSeHBDIQDAHgSkUqAT6H/cUMgMAAD4WQQyKqCABPs9N7QzAQDYXUBKBY1AFiocaAbnYJgJAADbC0iroALybyWWqtCIRAAAthSQSkFTWOE96XVd40sUAgCwgWhUZcH+R00r8V8FtZGu8T0kCgEASBaOhhzlmexYznNcYAEJopC3lV2v7EQprTKzBQDgP/EoSzCGEoyRGgoWWTzMkt6+DlMGKa0GMwYA4D8BacpB/sJiK7Lm+hocqmwzYwAAfk9f9RALBAQAYFsBKSlNg2AkC8hcAkIKCwDAEJA2EQgRCADAriks9kC+j0CCMeowYwAA/hMQNtE3i0C6RCAAAPERyALBIIUFALCtgHwgIKSwAAC2FZCaTlwvEQwiEACAbQSkIgEhAvl+D4QIBADAEJCyBGRKFPJtBEJTRQCAiIggIJsJCAcJAQAiAvKCgHwvIMwUAIA/BeQUAfm2CuuQmQIA8KeABKW8n3KUCMefLd27GqcaswUA4HcBCUp5b1Y2QTD+sJ7uSykxUwAAkkWErry/W5DSe0I8AAC+F5FX7YUgHv9YcDPjDTMDAOB7AWnpwBx7If8IaVCddsrMAADYTESuuA/935PnF5z9AADYXECC9u5DKq/+3vtoMiMAADYXkDKb6X///tdsngMA7BaFjAucvgr2PsrMBACA3UTkpsAVWefMAACA3QXkUGWsRay+OmAGAADsLiBtnQuZR9I7s7yfPOfpAwDsR0SCHllfKxvpn/s53PMYq/Is+P3uuPcDAODnAlLVuZCHlT2u7FYbzIuctCkZSxDf9Dtec+4DAGD/YhKU9x5JRPKwuT6ReBwE5bq62peyXQCAPQtHSVbV3SHjHEQfI90yeKSCAVq1AwCkLCgHOajOWup3CKKpFk8VACAbAWlqszl0xHPj2lef9kY+2e8AAMhWQBradJ6qpHeurzPPBOSFpwkAkK2ABBdP3au0dxJzTsSXZokPPE0AgGwFJNhUP1/Zu8dX4AbpqwueJgBA9iJS0rmJL09blTwHlVc8SQCA7AWkpsuWRp7e9REcGKxHoqoqTxYAIBsROfK0nDdoWXJiHhpUYUCLg4QAANkISMco5/VNQI4iv0vdjEgAACBdAQnOg/Q8vW2wwxMEALArIJ+eCginzwEALApITb2kfBQQTqADAFgUkKByqeupgLR5ggAA9gSk4XEEwh4IAIBlEfFxE/2TJwcA4I6ALD0SkC5PDgDAvoA8qzXIwqP7zy95cgAA9gXkUq3dfWhpMtfJeSqwAAAcEJADNVX0oaXJTJv+XF0LAOCAgAR3id8hIAAAsK2AtHWvOAICAABbCUjTMwEJLsGq8OQAAOwLSEN3a4wQEAAA2EZA6ggIAADkPQIJbiJ8RUAAABAQBAQAwGMBqepu9AkCAgAAuRcQ7j4HALAvIMGdIOeeCMjXyp6IQAAA3BCQkiKQqQcCMlLzxzoiAgDghoicqlGhLwJyjIAAACAgm9rSEJATBAQAwB0BmXgSgXxwHwgAgBviUdEm+qcnl0kFezUPPDkAADdE5EpX2y640hYAADYVj1PjQilfBCQo5z0LSpB5ggAA2QtHTZvRdzqcN/JIQKbaTA9EpB75vUocMgQASE88wn2PR92HPvRIPEwR+dCd7m2dqC9xRgQAIF0B6ehEd1/poJln4mG2d+8qigouxmrpKxEIAEAK4lFV6upTDnjpqXhEy3tfJIxcdwsAsGfhCPY8DrRp/qjGhL9yZEEk9aLftcETBwD4uXCUtEdwqY3nnieHBnc9JxJEIzfRzfUtRLZOFAMAiIcqklZ2q72CvApHXNv3tsagtenGujoTIyAAUHjxqEg4XnXGY14Q8TBTWuHdIaS0AAC2EJBbledOc7JRvotNVG12ouqsMhVaAAB/CkZLX29UkTQqqGiYNlel2VD7P8G9J1VmCwDA//7d56gb+xzjAkcc35X6voYtUFSRFhQXNNjzAICiCUdDFytda3U9QDgS7xGZSkCGGqdPRWl3itg6qsCqISYA4HtEUdE/15W7bxgW/PuhsUH+Sbpqoxbws0i7lrFKmrsSkweJ8YX2TA6M50BrFABwSijCMwdVpVRO5bwuJA4fWjEn2VQOcYFI7GWvJIxSzEilF2N34X4TAEBaUcRvZw/07weyc6WdPhJsgFN3fj/lTpHKsb6G1tnlECMAIBwNCcSFcer7M2YVO1AKJUytTI1/nhFVeBGxjPQcw2hlYEQtH0qL3SuaPJewdHSwkVJiAPgtujiRs3iUaExwtIXfdxmq4/GnISrPugHygJJigOKKRkub2Te6U2OU4EjYpyhWxddSUeRElhRRDhWhVONSoLxhAPkUjrIqoR61uhwjEFjC4mGTnl1B1HrAmwWQ8zSVvp6rPQals9g+W668r+woWJzwtgHkSzwa2hh/KlhXWyxb62t/hBQWQE5SVYc6ZNbVxiiODktzD2Wi9CiHFwE8Fo9DY6+jV8B26Jjd+0zOEREAPwWkrZTVo8ovR2yUYxZE5AERAfBLPFrq2Pqk+v0vlWLi1LCsbaaFTJk3E8B98WjoUOCL6vQ5FY7ZtimRCIAf+x5VRR5fOC7MtUiEtxTA7ejjQtVWRB0YkQgAbCwgNd2vwRkPzFULmjUe8rYCuCUeLfWzolQXc7kDcE8p1mMOGwK4IyAlvZw4KszlfZAvVQaekcoCcEdAjrT3gaPCXBaQsUTkibvbAdwQj6quk32nVQnmcGffhXHh2AsCAuCGgDTUNuKVDruYg6IRd6dMkG5t8PYCuCEil0oL9HFcmEMpq5lx5fFvl1Hx1gK4s/9xo9vhPnFcmGN7HuMYAQki5TZvL4B9AbnRBvo7EQjmqIAsYkp6z3l7AewLSC+Sc8Z5Ya7sgczWNPJ84e0FsC8gVF5hrm+kx/2/T95eALviUUFAME+ty2l0ALsCUidthXlqQcFHlbcYwJ6A1Oh/hXksIGykA1gUkCYpLMzjFBZ3hABYFJAGp88xjyMQBATAooAccv8H5qkFVy7f8BYD2Nv/uGMPBPPYPmjrDmBPQJ4REMzzGwop5QWwICAttcWe4YgwjwWkztsMkL2AnEhAiEAwn/dBuBcEAAHBsK1tRAQCgIBgGAICgIBgGAICkGfxqOgWwh5OCPPYgi4KR7zRANkKSE13oC9xQpjHFkTPd7zRANkKSIPbB7EcWLAAeuWNBsheQAY4IAwBAQAEBCuqISAACAiG7WTv9MMCQEAwjIaKAAgIhmUnILzRANkKSHAT4RfOB0NAAGAXARnifLAcWHAYtsVbDYCAYNguAnLJWw1ACgvDuNoWAAHBsEzsCwEBIIWFYbvYGAEBQEAwbFcBueetBkBAMGxbmyAgAAgIhu0qII+81QAICIYhIAAICIYhIAAICIa5aYuVzRAQAAQEw3YVkJeVlXmzARAQDENAABAQDMtMQLgTBAABwTAiEAAEBMOyEZB33moABATDthWQ6creeKsBshUQrrTFEBAAQEAwBAQAEBAMQ0AAEBAMQ0AAEBAMQ0AAAAHBcmJLBAQgewE5REAwBAQAthGO8sqqKztf2QgHhCEgALCNgLRWdqV7FHBCGAICABsJSBUBwXImIDMEBAABwTAEBMBxAWkiIFjeUlgrq/GGA2QjJAgIlpdzIHMiEIDsIpASAoLlyAIBeV1ZnTccIH0RuQjuT9CLhwPC8mDdlR3wdgOkLyA9HA6WMwui6Vv2QQDSFY82kQeW0830IAo54y0HSE9AznA2WE4tuGHzmrvRAdKLPh5xNFiO01hP7IUA7F88asoRcw86luc01qcqDKu89QD7E5CWDlvhaLA8W9Ag9Dk4LMtbD7A/ATmi+y5WEPtUqTp7IQB7EI+ywnqqr7Ci7IU8cLAQYH8icoeAYCmeBF/GtBixfbCQMyEAe0pfvVl+qRcOOBUsHZuqI65Ln+lrZSe8/QA/F5BLB06fLxCR3HbCnUhAFo6lsYJ5X8IDAOwuHg2d/XBhA32mF/tLFtzJPsYRe2tf2rAO+qr1JSaufLaZ9kE4EwLww+jj05H9j7lE41V7Mh0d/KI6zE8Lotr7lVV0xmjp0B7IQvP+Fi8AsJt4VBR9TBxKK3yoIqyui62aWr3GpUdw0m7fw/Gk/bWGuhzMHBKQX4puXyjnBdg9+ug65IzHOuR1FL7UOiHfRUC8s+BZXuoZBouAQ0WXS8dELoiSLvAGANsLyJNjewwjfaa68RmrnJD3VkCOdTlZVRFIW/sirlWIPXEmBGB7ARk49jIHKY6nyGdsK62FU/ZPQC7MnlNKZT05WmZMm3eADYWjrLbWLlXFzOV07iOftSMBWZC28u6091VEQCr6by4+xwGeAWBzEblzrC5/oHLP8zUCgmP2OwIpKQoZISAA/opHTdVXC4dSCIFIXMd81o420REQ/7renpkH9RT5HqtQwjUR6eEZADZLX1040LokuloNBK2T8JkRED8F5NQskTUikCOVz7r0TINqrDYeAmC9gISHunoOvbzBJVY3az7vm2P7NdhmAnKS8Dyb2oMbOyYgHTwEwHoBKamFg0s3D/ajex/G521LQGY4Ze/uHz9cMw8PHZuDRCAAG4rIh2MO+W1N+qqDgORPQIzUpEtFHJd4B4D1L23TodYlod0ntZOQgNyTwspdBFJVJaArBwsXSrsF0XkDTwEQ/+IeOLghXf3mM7cREC8FpPXNc71Q6fbcsUiEDr0ACS/tqYPVL5U1nzcoOT5BQPwTkA0XMw+OlfQO2AsBiH9h647dfR6kLx42+NxEIH5GIOUN0qmnjpVpD0hhAfz5spb01ZX7NTa60Edln3XuBMlfBGKIyL1DeyEDynkB/nxRqzrA1dXqcOrACvVkg8+NgORbQIKy8nNd7uRKSpU9EIAYAQnPf7hwVWz/u81zfe6y9kEQkBwKiJ7xsUq1XUitfiIgAPH7H+GJ7rHlCGSadPI8QUDKtHTPtYA0VNJru7w8vGDqbF1hB0ARBaThUPuSmx0+/51j5Z7YngREz7ftwPwMBeSWKATgzxe070jn3fYOn//MwQOQ2P4EpKJFwsjy3OyrW3Db7CQMgIC4EYEEn6G2o4B84ZjzKSBGmvXGAQF5DdqakMYCcEdAlhKAoGSzucPnP3HwCl5sjwKi59yxGGlONUc/lcaq4jkA/nkxWxYEZGHYSKmBwx0jkI4+/5K9kPwKiJ71m8U9kFBEHjlQCGA3AglfyKl+9rkOjlV2+PxN42rbKRdMOW+DH8zVM0WbS0sLnplErI7nALAXgcyUjhjphWzos1S+a3ORICBvhiDR2sT9Via7pCqrWuxcWy6a6O7y+QHyKiDHFjahF3IC3Z+u5mLOsXA/iNv2ukuqMvLMbe7Z9b7rJgxQFPGweVArcPi3e/gdEBB/LNiEvtjDM3+02DFhSAQC8L9/K5hs3eo33Ed7bLUzceUkPba+2u5pXw0JLXbqDebtEd4DEJB/Lu7pWYo+3vdxICtGQIhA3LWnfR3CUxRi4+70YI6d4T0AAfnn7MXIwv5Hd1+HsQwBmRGBuC8ge3rmVeO5Tywsfu6oxIKii8elHPnSwgruZo+/R03RzEy2xFE7HYGU9/jsb4wzQFkugD50ARt7IVBI8ajr8J6N/kK9Pf8upoBwDsR9AWnu+fm/WjhA+qXf5WSfggjg096HrYt6uikJyBQB8UJAOnt89uFdNlmnsWaK3umLBYUSjvAOjWcLZZDLNCpYdPjwXn/3GAFxugrrdt9tQHS40EYqdqI9mFOiECiCeDRlr5bOfXxtclXtjr/bqVa3Qxy1szZP8flfWqomnOt9Yi8Eci8gBxbFI4gKXlP83Vpa3SIg7tpkn+mryPM/WtmLpd9rpPYqRCGQ6+jj0lLZ40QN8O5SFpAb7gVx2kYpCkhTaUxbZ4C+9tFVAcBF8air5fmdcsVZn5MYaKPzJMXfsSEHMsZROy0gtZSef1UVUT2LLf0/uakQ8iYeNW0yPko8+hmv0mZKm52keQmPIpB7DhE6beM079HQfTKPmuMLS/shx3gdyJOAVBXedxVmf2UsIBO91NWUf8+6IiwExF37ymgevFiaB0tF2myoQy7Eo2w0SxwbrT5mGactbjL6fe+4kdD5FFYpg3lgI5W5NO63ecb7QB4EpKR2C7ZC+l9q+XCS0e97QwTitHUzmgdXFqrx5pp7S0VaZ+yHgO8C0tL+g83KpJus7o9WKSeb6O6mr24zmgdVLZpsR1tcOgVep6+eVBliy6nO1TKlnNHv3EFAnLSFWs1cZDQPKg4IyN57vgFkKSDhocGBxdr4hQSkhIAgICs7z3DxhIAA/OAlulVN/JdFAQkikPMMBaRpqbswtpmAHGS499d14PcOFm9XeCPwTTwaKmX8snzB0iLLzUTt+bCJ7q6AlDJ8B8LmikvL+yDPWkTVw/QaHgp8SF91HWhvvsg4AqkjIM7aa8YCcqb5t7Q0/5eaiwPzFkYd7KVnFjgrHlV1ph04svLsZPi7l2nl7q6AZPwetDQXFpbmxMIo6x2EpewICLguIGcKmycOOI1h1i8L3XidtZeM58Gh5sLMkoDMjEOtgYg8hoscvBS4KBwlnTrvO+IwxmrrUM14HF4sFg1gyfZs4Z24MRYUSwsCsojsh9xn/T4AbJP/f3fIYfSyrkBRCuuelu5O2qOFaPTIuGTKtoD8UkuhBt4KXBSQB8dW3n0LAlJFQJy1u6wrkNSF2paALBMWVUekscDF9FXPMYdhIwKpICBOC0gt4/nQMd6LhSNp3XtKecHF9NXSQQE5zngcwgiEjXT37NqCgFQcE5CwsOQQrwWuiEdZ3Ud/OSggBxYcBgLins11nXLWeyAN9YJzSUCChd4HngtcEZCKNudcFJBmxofHEBAEJLoH4pqAhJes0eodrItHVZtyLjjMRcRhPFtKWSAg7tlU55OyFpCm5uHUQUFlIx2sC0hDLSLmljcGvyJdcINqsDNLgoqAOCoglqLzKwcLTGZqdsqZELAqIC6E6F9q1fBlfIaJjY1CBMRZG2ddUKH5UDKuNXBNQJ6oxgLbAuJCmeI0JgrpZdkDCwFBQNbMiZpW+66lsLg3HawLyIEjm4QLOYnQXrLe/zBSFncIiHNmtXRVzUXHjgnIEx4MXBAQV+rcF4pCPpR3riAgmCMC0nCszU9YZHKIFwObAnJosVVD0n5I0FLlyNJ4hAIywGk7ZUFbm7bld+XeodsqQwE5xosBAvK7o7ix1TBOAnKLgCAgMXPj3KFO1QsJyAleDGy9EE21hxg6JCDBZzm2VeNOCosU1pq5ceTIPemhBXuXN3gysOUoa3oxpxZvXYtLYZUsjktVKTSaKbplSxu9sIx5UVa0/uJgt4YjY+5yuBAy2xS8jVzZ6YKIDBwYmweHct3Yf3Zvu32Hzl64Vt58IvEIGqLW8W6QlYB0HRSQVwfG5h4BcdKuHJgbbce6Vo/UI6xBBAI2BGQp0Vg6IB5DBzZKy6SwnLUHF05eO1ZgMVZqr4V4gA0BcanX0aMjY0MKy9ErbR2ZHy41Vxxpvh7g1aDIAjLUad8yAoKtuRO96cj703coAnmOjgs9sqBoAtJ1aGxIYRGBrJsfVZ1Kn1sej6UWOu82OhVDsQWk7VCL6qkrfX00Li8OOAfsz83qN1dad+iwq+0odaF3J9iTucWrQRorpWrC/3PlEqkwfVV1ZMwuOETorICMXXKURhPSTT57miKylLhSwgvpC4gOEF44lOd/d+F6To3Xk2NXlxb9GlvnyryN+fKc8BmXFkp9B67sD0F+BKQctyktR3nliIAsXOnno038dxy3sxFI2L7DlTRWKyFaXerCp6x7hXXwepCVsNzr1j/bK8yeKxUj9MDywr60/1B1YL6UFIWMHBCQL0p5IYtJX5OAPFveKF5IPB5sdd6NjEtD95CQvnLbFq4sOtQ65ErVjFPLKawv7gaBrMLuG+MUui1HMJGIWW+/oMaSnP3wa2/kzaHI9UmR68KigAwREMhish8oVdO3LCBjfQ4XNs87ckhLnLM3NrLd9saIXMMF2czitQhDUliQ9YppaTEN0VUXURdSES5dFIRtZjMXii+0D3KgPUWbh0+HHCaErCb9q+UN9KFWbTVHxuMuZjyIRty2qc37QRIikXfLEX1wALaFh4O0J/uH5WZwwYt26shY1GJOni85ie5FBPLs2Ht1b/G9CsbjE+8GWeyBdC1WG031onUcGY9DCdrSchUNtv0ZkXcdiK07MpcuLbQHWhjv1acrHR0gvwJyoUluQ0Amin6qjtTxt3QrY1xBAQLixz3pT0ofuVCMUVI6dGBRQLgjHTIREBsrxk/lrV1pyR1Xw4/5ebDQlTl1IFHLqiR8bqawEBDIs4A8uFB6aex9vLLXkQt7dukMhBZJnxYEpIuAQBYCYqNdx0JO25XDXw3u/MiNfagNv0tzK+vFyUKp2Hu8HKQ1sSu61c3GietPV6IPjcWRhX5FWHqdaK9duoVPe2tjC+m8JzwdpDWp75Tvz3oD/dWFflfGOFSVN2ejPB82dtFxatGU5RybcTshpDmhbex9TF2b0BKQZxxv7kp6647Nsxuli+cZR/rsg0AuBCR4sT8cTOOdZ7jJiWWXxjpxbK4dqHAkyyq/odLUJTwe+CwgCznppmPpq5YOMo5xurlLY905+t4NM7zydqbGoAgI7HUSdzJedU9dqs83UldnNE7MrfVdaZFjzLm60qWLlBZpSfelXLlUVAD5EJBexhUhh46NQUnRB2c/8msvDr577ZQWLbOESsIvpc4QENjrJM4yAunZvigqYRxecbL5jkIcnHNhy5x9l89PErpqzzTP63g+2NckPskodbNw9XIbpbBIX+V/L6Tj2LwrGZV/+9xQn6+Jpt9cSh+D3+JxqMmbxQHCIMo5duT3Lkf+/YGzH4VpsNhy7B2saP/tNaM52OeGQtjX5L2UY0+7nDAQqFuHfu8a6avC3RHypfTpmWt7AEpl3ajkeJnBHuQp3g/2MXEf5NzTvoXwybWNc2MMOuqZhKPNt4BM5DwfXbmtMJJCPdEFZuMMUnm3Lu5Dgl/i0Yq5MCmtCXvq6oTVivSDFFZubSELK5NeXBMQI5V1k8GlbgtF3KSxYPc9AJ26Hmew8nO26kNdgO8s9CbCshEN0/6tAnT4vewYfenS3g+irQnsPFHrSl9lsXF+4fA4lCRwA86A5DJlNYtZzQ9crkJStJ72wm6uec81t7DTJD1W+irtF/nWpXYlMeNwLYcytHgXPJbORvFAIrKIKehoOzwnOxndy9MjjQU/cZyjLKo9XN6sU7ogiyICLFsLN8zjIpC5Lk9zdU+uqo3+LCojL4hCYJe0zUvK4XFQa/4Q7rc4PBYPli7RwuyfCTlwcTPdeEevM+hJ9+ja4UrwY/+jn/Lq71mb9Acu9t3RKi88AUz0UUzrOp5e7aS8Lxd2xeZMCGw1MY9SzrFOtLKvu3QfdYyInmsjcYozLex96a4LyIBqLHBpUrZVaz5OObd6rReg7vDLeaMVGNVXBRUQx9/VpjpFjFJON7/QnRc2zateyWkuUl7VVBwfi2NFSdHy3aQ22Fj+rOf4HK3rvNaTRCTuTMu+bmw8xEPCdxOyrNLdtB1k7y/H2ySo+uRNlTrmTXAjNtULY5+ulvMaXXrrmqt9pVqnKQjIUpEONxXCtxMzi/ryugfjcB2TvppJ/AY4VwTEAQGpGP/+rrTzOKU9u3vKeWGTSZl6iwRPxuIlpvqKCKRYFiwULj3JHNxp8TdKKf1MNRZs5DTT3PsIHPKRB+NwRJSBacEw9mTOHmdw5cALXhLWrWLSvnHv05OxuKF0F/Mpalb15EPKFYN9WrzDOqc5Tnk19+zJWNzR9wozU1kezNlaBu2Hvly7rRHc2ft4S3n10nO9JUJYZaL2DQgI9u/K25P3+FjvcVpVlDOqsSAp/P1K+eDgnQ+rF5VEcnkUFk3d1DyYu+Y5rrTmbyBQx3hNCCddRf2o0j73ceTJeNzp8+I4MVNADjyZvwfq35ZWFDKhpBfMCdfQSdY0WyG8+TDhtIJ7oAIL81VAjP3MNBuAvrncIwyyz5umWf4XNk4sezAWZdJXWELrnSuP3um0byzs09oEzMn2nqLT7Pvy8qmBIq3bsbi25iMthCoezOPDlAVkrL0W0lgIyN+lfx8pnnt496V2XC8e1VfYur28hgfzuJxyS6KZ9lnqeNBii0clJue/3GM0Eux/3HsyFiXd/0H6ClsXTdc9mc93KZblL7XoLNHmvdgCcq4IYRKZHIs9rtgqnohHWZuP3P2BeS8gmtf9FBdEXyq+qeFJiysgzzG50n3ddxFMsEePIrED9QKjUSKWl2qsh5TPdw2pxiqueCQ1DNyXgASRzYlHAnKrA1hDohAsZhM97M7rk4CcaE6n2Z6IDr0FFZDHBKGY7KESaaHwtuWRgDwr+hgShWAx83kpZ3zs2Xv+luD491kkwz5IAQWku2bj+6cr8Kmqu0oeCcinUaJIJ14sLgIZal43PZnXJUXWsxQFxKt9IdiPs7za4yo7rmpr4FPXTnUy5fwHtomQfOn98aU0vZVyGmvqS5dt2M+KJGxdsq9eOXERy5tn49LK4B54LD+XTH36snms6sKnlMfjA+9arM3z9z2W6s4jf9fYl7Mfxpg0SVthG0Qf4V5I16fqI50JSbvVywneNf/i0dDm+T5PqZoCspQ4tT0blzYNFLEt0rVeCYjm+CjlNNYdHrYY6atBCqsys4LrzrcLZ9TChBbuWK6uZo7M8TT73XlxayP8fBI973kSRQVk5ONlM+pI/IFjxDa0ri+VWMYcT7vFe2AveNn8Rh/HWoWkUd5oti7x7cWqruxMToFGitimAuJbCquZQZq2z3W3+RSQukoP+xlcHFX2bGwOVStPCgvbxlEeeTbPO7r3J81F0oyT6fkTj6q+Pqa8AgkPWfkmIOEVtlRhYdvch3HvoS+4zqBcfcxlU/kRj4pSNNeKDtK8ZOZdP9M3AXlGPLAdqo5ePPQH7ZTvCfk3QsP75iDyUNXVqbpydlPeRHvwcP+jJGHlECG2tYD4mO/XPmja8/2LKMR/ATmQPchJ9lKcOMH+x6WH0UdVY0P3XWwXAal4Nt+b2gv9THl8Jvo5Lfpk+Zu6OpBz7Eo8xhKQNGrBg7+/4+lYUX2F7VJ9+OLbgslIY92lnLZdyvdcs6nub/rqRaIx1gp7ZrRi2HflxaOv5XsICPYDATnxdM4fpXzRVHgmLHi3HvDI/k2Q5pp27WnkO688Hae6DhAiINguAnLq6bxvpFzSb6aygvfrBq/s/qQoqy15mOfMoj35Ui+Sr+mrEyIQ7Adp22uP/cVbRuM00vmTK7y02yvpaznzfoZ3WwST49zjceMEOvYT+/B47l9nkMYKo7WpyoeDzfvbmM/C6XVbex2GgHQtlKMOfY0+EBCs6A0EU2httEnG4pdvp/jzLiIlbWL3LZSjetcTKEFAljhDrGgH5oLT9Bbm/lIdMQ70GbhP3dLDr6nD5qPymcOMBWShn9v0eAwvlMtGQLAiRiCnGaWxogIy0cLtRnu3pLAsbJjfK6fY1ySYZewIxxKviqdj2FAeeIgjxHYVkDCN7PE78Bpzq2gWIjLX4u3KzGLoCEIZL59OqqpubJj3jfMdc+O2tCw7kh54PJ4tHaga4wixHwhIzXO/cqdFlI33YKp9mCtVj5LOStnhmfsdNjd+F4p+aggIVnABqXvuVy6NLMbCkoj0lM5CQFLc7zhUme7IgaqhmVJoPldgtREQjAjk71PpLxYFJFyQhiLSwuPvd6+jpZRVFl00tynfPfR8bMNGkwgIVmQBqaqYZODAeM4kZA9EIz9/sHV9vdJG18ixF6fp+fgGK68n7gLBipzCMhZTnw6Na5jhYDP9B5FHTZHHsx7uxKEHPPT5/IfG+Fhjy10gWGEjEL0Lhxn1xtq2y8UzkchuIeWB8oFvEo+RY3dW9HMQuiMg2D4WUnkQkGNHy9kniMj2kUewuXtrCMfEQSfX87wCq2QICCksrOgCcuTweagvWsJv9zBv1ALZ5ZVxXgTklT5YGCmsvzMefUfHeCl/c4Y6rH+ITUUe745tmOcuhYWAYAiINwISprK8vTYiq4fYVn8Y18tKpyqzKyMgGAKSCwHpaJXverowqMxqoxbxG+ddD16YsfYNyjkYcwTk+9QBTSZzWsarPlgN45/fPXjeC+2JHKAavz/MrG4Q3Mfex5XvJbzGxiECgv10VeyrgLTClJD66z14kDo3U1pVlOO/TfOhB+q/VJR0loMS3hICghU8AqkZh5UrOo3edey4wLo0+hXlvf88vK4nL8tYG1n1nIx71WhljTPEChWBJKS0njzJhCzli44KfZeIBmDuyQMb5KkeW6suIhCs0B0ZIu+EKz2xNh37x8Juqqvq6t5xB7aIXP5SRUCKc12rziP1aDhZDAHxLCPyS4etLwq3HyLndS+1HzssHuFlVUFY+5HDZ4CAJPchCjZZjzRWTx5tsCIgu78TTbVP8uWdmMuPtoomHida4YX3Ay8dFZCxrKtDjuWcPQsEJP65PxslnnVjg5Wxyn8Ecu3BmRAztf6h+dkoinicS+WnHjiSkYTuIafP45lN9D9WdM9rVqaMVaQKK6c+6tLhxcJEttB8HElEDvNS0LDu4XRUPTD2YDUXCkiQZ7zM6fN4win+8XJexoxTWfN2xuHC3yOQHO/Pjhxe5IQNZqdGpuQl16ksvYQnWsmNE079hvsOfYlN22JTxYVC9Ny2U5aAkJaJCEg0Vam5+2q8uIhITiMQIwqxvZk+UyrtSPNumrBHG70St5JnEbnTg5lGxGMmZ91TOFbW91cttlkOH8p1jp8HKaw/D2jFCUhYcDDVeCEg/x0kLOX03XhQ2xCbhRxV7b0ey29OEgQk/P4XFX/U8/YwDv7672raQURAwpX+mx7ahbF5afOil5n64xzmWEBIYf2ZHthEQBirHEcgeubhlc+2qkS/NOeC+Xgq//kRs/D+46xargQkLIeUQPSllIuIo+7rFz/V95eUNri3uNk+1kGdco5fkmdSWH9EIBdrBIToozgCUlHbor7Fxcy7Uvl1+cVbYwEzj0nvL7RnW8+bkj9LUedGBYH50n6EkUek8sV265L7nAvIIwLyR9rgDAFBQAwf9J6Q3s5qQXNipgm1EJ/8lXzNdyAqX3l6CFXl5kYJgz9U9NGJ/Dmb+ceFHlS7AC/IAEf4u4AkrEbDnDgC8l/K5PV/OSeh0GSRYRQSXVifaDHTSygw+rtzRp4eQNs4nBM38M/hiV/jz9QsO7bxXwW4QtIQd1p1/LeYOUkYq3OtRonY/hmDYCxOc/5+1JWFGEZ+90WG43xpVlbpM4VzcZYgOtO8PYizBEc1jaty0sq4b9mRNAsgIGXjBWFl/c+ipbMmJ07V2n/vbe5baMhZ38T4oiwF5D56gZTRCuorwXe95+1BnBglvBO9hH+3CEn4/tM11VdZ3BRXFAEpGS8IK+tVlEzRAQISyYTcWG5j867CjlbC4m8e0xvrLI8P41y/3IsG5WVNyus2QV3Diq1BygcMixSB3K5JLxYpnx/eOFlbM1YvCMhvAlLP+fsRtjVJU0Cm2ntL2hQP27afKzNTDVNa+nwfRnuTDy2+23l8GFWdBznTYJQSXtIblaJNElIMd4poxikLSKsAAhKG6D0c478t3BtEIEQgGQrIpwTiJWHfd2l0xDiL+MqKoqQjWU1lv53/FQ2j7rorcYh26Q07Tx5JZb+IQPYWopPC+iYCQUBiBaRTEAH5SPG5B8LR0Hv4+tf6C+1uowtvpaFL4bzVQr2YtxRqEKdGPm8Z2VB60gDVUz6hjoAUV0BKa6I1BKR4AtJJMQL5e88isjE+X9MZ43VdOvp/RUZtS8yW2YvIYH5pNVDSqczxN4dvjr/ZbA8P40wLLCBmiE5p6mr+rRmrpsrRZ4zV3+/eZe7bh//37OMikHHEByWV9/Y0d8LioUUksniSr2pJrHrfpFgvEtL/hb4bvayN9bFCtaEc+8RoqX6vgW5qDyVJHB7ChmJ68LOEF+BaP7ubcLixgYAUSjy+wtXgmvE64MzMv+/HYUF8UyNGQCbyQTU5/Ln81TRmMduW37o30vPRw6t3YerJSJlNEhbHT/+DPx7SqTGwfaNj70RRybVE5kjRxeOa6CMUjxOlHGYJSn6gn/0S8+CDF6SKgBTGZhqDmw0KQYYISDEWWGsEZBRWOhlt/scJfiT8vtBvDRP2QapGpHtnCFP0e7vR0+kIyD+bQ1Pj4YwVYYyVoz/UwB5qFZh0Sr0fcYxvCQLybjzYWAEpYOHCsuAC8vld/bwWMQhIsQSkHiMgX2GK2/BHSQJyrEilEXOq3WybVNMCpaPo5inhMPVE/6+Mcvzv32aL0fr6ufEAzuToKhKQpEvvJ2Z4p6jlM8YxzvQASvq+x5hwcViEB2QUJBCBbNjF1HKPNgTEDQGZhO2X5PA/jdsBF5FxOpV4hFdaDGOyJm/yc3VZQ9/7krBH2wsXO4UWEqPyYJiQjnqTaFQ0sGdrVoAf5gEaicQkIX11Z3zf419/Xl85zPXNXv/97jWF1uyB/DMG5Q3GrI+AFCPFayxwX2MWq0eRFNc8spke3nN0JZFpKIsyjNmP7coPhQvl0ga+8cFYBFaKKiDNNSVy4aHBkgb/UAM6NlaNM6Oa4TEsK9TgvyfUU3+E1VzfCEijIAISVr8hIBs4RQSkcBFIO0ZA5mEjSTnwVyPTsTDu6hjKhx0q/dmJEYTRX//dxHpj+KWqUlm9NQvmq6Knrzp/JV9e/6zVcUNf20Yv/LkE5ssQk8tIZPOZUH31LKdZNTashgUVkDCqQ0D+EZD6NwcJKwjIv4u7ogjIsQQimmK/kP84UarJnEtha5FeeENgeNgvZv92LH8T+LLnGPF6S9ifHOnvrhUyAlG11P2azdsDs1WCHmTf+P5Q5cNTmtVIbr+fcE3ktbEBliQg3YI9i7uCd5mdygnU1qWxJCCcmVlzXian78dDZC8ivPrY3LOYGHPpyziS8BZzenyRcJ7kM/J9Je2hDJIOFoZ7J0VMXX3+tf4+4GpkIDsJL+9IolCKCMgwYfOpY3xfI9JMMMxb3hfsedRSbtfgxT0gm6zklPIs8mHCz6KVkcb03pub93RELhwbGaIw0n/rxCzYFjHdxZcxXXfDbhFJvQEvixh9XK45Hf4l1S3H/JnPhLrok8j3JglI10xRSEDujNu9wvMAVwV8JkkVH0VpotjZcJzuC3yYcFnEg2xKJX1FVv+Xke85VUTwZQjIVN/bjnzvwZrU/X10IaOf/5EQOd9F7wspwmr3IUE8PuXIDiN/Jux9H5eWeo35GY3IA18mCEhdD6CvBx1WRFwWVEBmBT0Pso2A3BT8LEgRBaQR8T3Be3Ies1fyLL8zMw5Cz8JioMj399Y0V6wkpJkHMZv5b+Gp+CI8iLKU+j1mIHp6AAcxIV9V/y9u5fcc83MOjJfcrM3+MPOFhoB0jVXDR4EFhAhkMwH5QkAKLSDjmKxHxajoXEg4woawn9EKP/mdpDMepzF/d0vv6DDmrMmj0mz1vD+Iqn7ZacLpyrO46g7tcXzE/LlZ9EpcY+NpHCMg7+bfb6SwTAHZ6DxADp/Ns8a3qBHIwRYCUuRKrKci3jcReeYTnQ8pGQvj8C6jcaScNxSQcszf2UvIxNzG+LSOzpRET6gv9e8PYblwXh9Afc0+Rl+D00hIeT0qfIue9hzE5BcbEpwkAWlGcotxAlIq4AvyUuDN4W0ikOuCC8hLES5bi3nugzgBMS51qmkBHPU7y2h1lfF3Jt3/8RHzvRXjQr7otQIL+dWrXEchUsl5wqGYVsKfCZsijox9irB52UeMUoc9Z6YxDzIagbQieyBhS4sKAoKAJIzTJRFIMU6hfyMgHWPB2pCDj6vWihUQY1836ZxNJWExHV4rMI/ZUH/M7bORc7+Qg55FBus+6WCSymyHRvQxVw76I+zlFHkoTSOfv9SfGStcvDNu7ipL0e8iFyp9FjSF1VrTARQB+W+cDr8pQc+zzcPWQgVPYY3j5ovSTIMEQSjHRBSlNW3bD9d8loOYRcwovN0wzw+hIgd/rHzhnSoISklOO6HiZSwxasT8/ReGI1waG/TnEbGpKgy9iziEQRFXWMbqeoCAJI5PuOgoooBMinaAMPLs341FZj9BQEpGa6boIjkpwxK3mb7QzztP8kVKV73p53UlHo96h8tFeCB1rXobSTdsKd+3TDj41VnzZ4YRAenGHNCpGh0yu5GDUvWCviTtb25Ey7OAtDcUkFbk5syinP8YFO2AbYyAzL8RkLqR/ZhHBORozd/9FiMgY/1d7TV/7kwL5tAOwzZNRXggJTnx6pro43HTTSbjz9xvISBtqfzrJvsxCEjhI5Bwjw0BKXYKa7hGQEz/862AGF13o5viYTfy6jcZnbqxiV8uxHmQDR9YM6HJ31ib8ZUNBCTM237ECEi4mjzW3xfurzxtshrN6Zh3iEC+jUCqkdUoAlKMd6NnZEM+EwSkpkggeuRgFD03EvlzRwnvXa+oe04/iUrKWgmHpzqXMRVbZ0YfmlLkz4c9aabGYZ7fyncj3x9WNQyN+4mLLCAfCMhaAQm7rxZNQPpanDUL5Iuqxr5XeIivn3QWxijiuYtUY400b6pxDTuNiqxxJBIJW5V0UIfNH1z4EHqRRmOhPUQfdEwEYgrITE6xvCYMPNOqoq9NqFpBx75dUAHZ6AZKOZWjggrIoKjvhpx+eIjvTv6i9s3exCAiIKfGDaBxhwpP5YMW33XagO9TV2cJx/yXihYqawTkwWhoFvaied/AKXwoUilsyKj8fhHblX9tMUYtOZIiCkij4AUmx/paX+cjYlLB07CiKunKAP29cfOqSwpr84cUXip/H1N/Hm5GHcYIgJnGirv85eGbex6aikROixKiJ4zDQQHz+1u9pEbLiiL1DZsp6jop9B3c2y2CowuxO/33dX7oNiYCGRV572mXwa/HdOsdybFdx5z9iArIMGbytzb4uZWiK73RNqZI7cqD3/Vxy3E6KtgYDZUVKOGhNp4jrzFjePnNn7lacw13lVHdLkVgDuBnnHhEBUQiMI1xEHVGduMU1l2BKrEW+l1vdhinIrV0H7CRu/W79BiJ5BffLVRUwfUr4dK8I0Z18wjkKaby6njdPoa+Hsb0c/okh7iVY7wp0D5IKCDXO6QoBgUTkAPekK3myFVkIRbsx95tkAWZJDyDc0Z1cwG5j6Sgnr45kRkKyEnM/scjeduNxz7cgypSldEuAtIomID0OaC29bt0JL81MzIh9xv4vpeEZ3DGqG4uIOGlPYvwitl1TcIMATmOCEgv183F0otC7teshPIoIJ0dxqhIBy57Re3O8IP3qGYcD5hIhK83+HPtmAv3RkSA2+2BnGsj/VlislFpbURARnH3C8Nv0UYpQcCvCyQgHzsKyGfBIhAEZLfF8IPmyvsmN50qjXWs6KVn3DjIJvoWAtJWKqVl9NrfREBOIpdHkbpaP7nrMf+9rM28cYEEpL2DgBCBwKZ7IW+qyrrcYZ6RQdkh9Kt9l65as6p+04Q/YfC/jUCSWkUfFGgjHQFZX2QwVV6eSsbd3rNDicgl/giKFJ3caqN4WQABKW85Po2CtHwJG5ee8Fb86H2qkA2BIk34ktFVdFYAAWlsOT71gkRohe4NBwA/F5C8l/O+a9OyvMX4VAsQgYRnZC4QEADYVkSKFIGcbjk25QJEIKGAXPI2AMC2AnKJgKwdn4+Yxnd5E5AwhUUpPADsFIHkvevsyy6bxIpA8i4g3fDKVN4IAEBA4gXkaIfxyfv+0EwH4MpEIACwrYM81GnYPB8onKv7cGOH8XmWuOZVRKY6U0UXXgDY2kGW1csnz23LR9ELyrYU2G6OW76MJJKcXwCAnZzkgXE3fV4vSqr/YGzeciwgwSHSB94CANhVQPLeNLCHgCTaJzcQAsBPBCS823mZ4xLeyo5j086xgCz0u9EBFgB2FpCaVqIISLy4vuZ0E32mFuI0/wOAnQWkhYAkjk01xwIy1Z0wpLAA4EcCcpFjAXn7yRkHCcgypxVYpK8A4EcC0tBJ5EFOV9o/FZDHnI5Ll9kPAPsQkbr6IQ1zulFc/sHYHGm1npcxWar/1S37HwCwLxE5kGPJm4A8/1BAWorO8rR5/qEFA/sfAICArNkofv7huLRyFoGEAnKBgAAAAoKAEIEAgFUBqerUdt4E5BEB+aO55N8RCLMeAPYpIHmLQIIuw7cISGwEcsqsB4B9CUglhxFI4PjPf5Kq0Wn0ac6isg9auAPAvkUkb6eu+9rb+ck5kLwJyEh3wHCIEAD2KiCnWp3m4VBhUML7/tONYt2ZkicBGegOGO4AAYC9i8iDHO8oJ2dA9iEgeerGG/Q9O2CmA0AaAnKr9u7jHAjIy0/v+s6ZgCwREABISzwaOmDWVbVOHgSktgcRQUAAADZwlscSkAURSO4EJExhNZnpAJCGgBzmTEBaPxyPUg7SeaYF+1ttZjoApCEgHQnIr5wIyMkPmynWc5jCqjHTASANASmpBfoiBwfmbn6artE5kEFOBHUoQaWNOwCkJiC3OWhrMtzXZrEulZrlYDwuEQ8ASFNAKqrEevc8Chnsy1kqkvFdUPvsfQAAAmJfQJYe3pOOgAAAAoKAICAA4K6AHOdAQIb7EBDtCeUlhUUHXgBIXUAOEZC1EQgCAgCQ4DDbCMhv43GNgAAAbOYwmypdnSIg/94X3/P8DMgbLUwAIAsBKenA2dhzAWnuaTzqEpClp2PxqSiKS6QAIBMR6cgJIyD/7At1Pb5kK7hp8uind6MAAGzqNGsIyG/j8eGpgCzDtvbMagDIUkR8FpDePp2migp8FZC/IxBmNABkJR5tzwUkqDqq72ksDjyOQMIUVoVZDQCksDYXkMqexqLtcQQSCkiZWQ0AWQlIWU7TWwHZ41g0PReQFzbQASBLAamoEmtKBPL3WDx7KiBBG/pjZjQA2BCSG0/Pg3T3uAcSnIs593AcggOEH8xiALAlIIee7oXsTUA8HocgenxkFgMAAoKAICAA4J2ADBCQv8fhCwEBANjccbY8bCS4VPPAfR4k9FZAOAMCALYEpOapgLzvWUCOPBUQWrgDgDUBKXsoIIsUIpCWjwLCDAYA2yLypvMEPjjNuT7r8z5PX0tAhp6JaJfZCwC2BeRaUcjck7RNd9+pGw/b249WdsbsBQDbAtJSP6WJJwISfNb2nsfgwDMB2duNjAAAPxWQN48iEATkn9JrBAQArAvIkZxyYQVE49D3TEAo3wUA6wLS8U1AUhqHHiksAIDt0ze+CMgEAdn/lb4AALs6zmMEBAEBANjFcQY38j14cjdIICAPKY3Dp2e9wBAQAHBCRE51tsCHzeOzlMbg05MDhH3d48ImOgA4ISAdT7ryBp/xsMACMlMfsAtmLQC4IiC+nIMYFlxApggIABCBuBeBvKnTLxEIAMAWzrPpUQRyVGABCSOQY2YtALgiIA1PyljTTGG9eNCVGAEBACcFpOuJgHRSGoMnjwTkiFkLAK4ISE2OaVlgAblf2RgBAQDIp4B8pdFI0SMBCTfRgzvcS8xcAHBBQMraA5g7LiKTtE5g+yYgzFoAcElEEBD3L9UKBOQjrTQeAECeBWSMgPwtIC1mLAAgIG4JyNgTAeEuEABwSkB82EQvuoBMJSB1ZiwAICCksHYRkBozFgAQkO0d6GEKv3tpZY+eHCREQAAAAdnw/ovov18GZccpCMiTB5dqhQcJERAAcEpAXGxlEicgt2lsInvWygQBAQAEZAMBMaOiuW7jq6bw+/uQwgoPErKJDgAIyA4Ccrvv61yNk/i+CAhlvACAgGwgILOIgNztO4UTCJJnAtJkxgKAK+IRrMD7DgvIEgHhJDoAuCkgLUcvlIoTkIcUUlhhN+IFvbAAALZzoG2HBWQZcaAPabQy9+RCLQQEAJwTkKajKaw4B4qAICAAgIDs5ECfUxKQHgICALC982x5JiDlFMYAAQEA2MF5dnTfeJEFxJff/x0BAQCXBOTAIwf6WmABWSgCOWbWAoArAnLkwV0YpoBU9r0P4pmAXDBrAcAVATn2TUAKGoEsERAAcE1ATjxoZY6A/GMD9QMrM3MBwAUBOfVMQPZ9H0jQyuXLEwH5pTMr9MMCAOviETjPCw/aeCAgv0chCAgAWBeQEgKCgAAA7Oo8rz1xnP8KyD6rsBAQAIDdnGd1ZVeeCUhrzwJy4NEm+i991jazFwBcEJFbTxznXALSKbqAMGsBwBUBufFMQI73/Pv7JiADZi0AuCAeJbVI98FxjnQjYXvPYxCk8d4kUL7sgVSYvQBgUzwq+urLbXzBtbOHKY3FhU55Dz04E0MKCwCsC0iw8j7TwTTX7wMPqqTu07oPXPsq9xoL19u6jNMSUgCAbRznTURAXIxEloaA1FIah5qKCXwQ0zEdeQHARQFxrftsVEDKKY1DWeXMPQ/SeYGAnDB7AcAFAfl01GmaAjLSZn89RQE59URAgrE4Y/YCAAKyuYCklsLSWBx6crVtMBanzF4AQEA2T2HdpdTKvaSvbY8EhAgEAKyKR3Cz36Mc0i+HBWSS1j0gkfFo6s5118t4g893xwwGANsi8un4Fa4LfcaTDMaiqut9nz04VNhLq6QZAGATh9lxvAvtQo48OOjYyEhA6qrGcj0KmaRZlQYA8J3DbDucvjIF5CPNzfMYAbn2JI31mMW4AAAkCYjLEcg8bKCY4Zg01NZkjIAAACQ7yyYC4reAMIsBAAFZLyK3GY5JUJl27Hhqz4xASsxkALAlIAMPBOQw43EpeyAgMwkIbd0BwIqAHHogIF82Tl17cKBwoXJjBAQAMneQNZWBul5tFFRgVS2Mz4tKZWeOnwWpM5sBIGsHeaLzFa4LyKuNsw6rn/mk6GzucHPFIQICADYE5EICMkNAEgXkS1GIqwIyoIwXAGwIyDkRCAICAPCTCMR1AXmyUaqqCqdQQJaksAAAPBQQS+ODgAAArBGQDwRkrYCMdCJ96XCJMwICAJk6x+C09e3K+gjIWgEJy3hdFZBA3DrMaADI0jk2FX0sPDiF/pC1k9T4vMhBuywgwWe75DAhAGQdgbh+At0UkDYCkiggd/TDAoCsRWSIgKwVkPCMzMzhSG3G1bYAYENAiEAQEACA3ArIRJv9WQtI3RCQpcPjg4AAACmsbwSkkfHYhAKydHx8AgG5ZzYDABGIOwISpLA+PRgfBAQAiEAQkN3vBGE2A0CWDrKBgHwrIH0PxueXhK7JrAaALB0kApIPARlkXWQAAAgIAuL/+PxSvy4EBABwkI4ISMMzAaEfFgAgIEQgOwnIHbMaAHCQfwrIHRHItwJCKS8AZCogXwhIbiKQB2Y1AOAgHRAQjVEXAQEA8FdAprby+7qLfezBhVsICAAgII4JyL1xY+Pc4TEaq2NxmZkNAAjI7wJya1lAxg4LyEJj9IyAAAACgoAgIACAgOxrE93SGN0ZArJwXEBeEBAAQEDciUCuV9bzSEBqzGwAQEDcEJATlfK6LiDBnSBvCAgAZOkcx54IyKWlMWrrVkLXBWSOgABAVo6xof5SEw8EZGyrUaDG6c1xoQ0FJBC6KrMbANJ0imU5xifHzzaEFqTZ6pbGqi4BmXkgIEQgAJCJgNQ9E5CGpbEKBWThSQRSZ4YDAAJiCIjFsap5ICBLPcePlVWY4QCQtoA0PRKQga3UjBGBzB0XkCDF9sHsBoCsnKNPAmJrDyTYK3r1IAIJBOSdWQ0ACIg7m+gdCcgvBAQAwD8B6drK7UtAHolAAAD8E5Ag+rixPE5Hjp8DQUAAAAGJKU/9XNmF5XFqOX71LwICAAiIwwIy9qCMFwEBAAQkIiDnCAgCAgDuiEfJEwHp2hYQjRcCAgAgh1j2KAI5sjxWlZWNEBAAAL8EJIhA2pbHqumBgLCJDgCZOsYHx9u5T3UGo2N5nOq6lRABAQCQY7xwPLcfrPpPHBinku5GHzkcqZHCAoBMHeOZ4wISHCJsOjRW71rtu9zOvczMBoAsVtXHCMjG43UuBz13XEBo5w4ACIhjAlJzWECWCAgAZOkQyx4IyJcrDlGC67KAzLgTHQCydIrORyCOjZfLKSwEBAAQEBcFhAgEAOB3p3iofQZXBeTNsfF6cFRwERAAQEAMs96FN2a8gpYmfYcF5M3W3fEAUDwBOXBUQJZqs3Lg4Jh1Hd4DQUAAIDNn2HE4AgkEpOTgmL0jIACAgPzf/2u7LCCOjpmrAjJFQAAAAXFbQD4cTfmFAsJBQgBAQByOQFzth4WAAEBmzrDpsIA8Oy4gS0cFhGaKAFA4ATGdcnBY79jRMTtVixXXDhSOdXcKAgIAhRSQmbGSbjg6Zq2V3WvcXIpCgvLiSxcr1wAAAcnqBsJgdX/v8JjV1Nr90zEBeVN0hIAAQCEFJIhABiu79UBAuvq8LglIh1kNAEUVkKWLLUxiBOTMRQFhRgNAls6w5GAVVnDO4swDAfl0bCP9hQ10ACi6gDwHTR4dF5COIhAEBAAKLSKuCcijK9fYJoxXVcLrWgoLAQGAzB3iwDEBuXb5TgtdBdzUpvXUMQGhAgsAChuBBCv6Ew/GrCyHPXao+OAJAQGAIgtI4JDbnozbo0OHCYPP8MhsBoAip7C+fDnLEERK2gdZOtIHCwEBgEILyNDlDfSYsXuR83ZCQEhhAUCWDrDiYATS9mDcyvp678hGeiAgd1RhAUDRI5COY+NTTnLMqhibOlJ8cMNdIACQpXMMylF77IGsHaNqXGdg/feLlY0cEhAiEAAonIAsVYF15tn4dRwTECIQAMhUQLqRXPrCUurq2sPxC+4G6ceM38KCgFy5fAATAPItIAuLDjD4DAcejl9DV9zO1BdrblFALklhAYANAQmd3tSCA1yoA++hh+NXU/nsl+W+WDN1CEZAAMCKgEwtRSDBz3r15QR6ZPzKWvnbbu0+823/CAD8F5CGVv8Li/sf4R3oTU/H8FAt6CeWixBOmNEAUDQBmSsC6Xg6hjVVQE0sHyREQACgsBFI2+NxPLFczouAAICV1XPYltzWJnBPK/iax+PYsXyiHwEBgMwdX0XnB7qW7rYIfua579VDq89fNw5k2ojkEBAAyNzxldSO49WSgAx93TyPEZBXVbJ9WdgPQUAAAAHxdBxrqsQaahxtlPQeMaMBwJaAjBCQH0Ugd2prMrWUxkJAACBzATk22nEgILsLyJUOFC4s7YUgIACQufNrSUBs3GvxlYcOsuFNgBpHW40paWMCAFYcoLUIJCfj19DX14iAZDWmS2YxANhygPcWBCRwsC85G8ebSAorqzENqr5azGQAsOH4jrQfkWX7kmcfO/B+M45mc8pZhimsN+4CAQCbji9LAZmq+quUs3GsRE72LzOKPh6ZxQBgU0C+shaQnI7ls0qiZxmO5QOzGACKEoFMciwgL3LqywwFhAgEAKwKyCDjPZA8RyDTDPc/SGEBQKEEJEjvnOd0LI8QEAAokoC0LKSwSjkdy5oFAWEPBACsRiBZCsggx2PZVilvVh15g8jxhlkMALacXjWjFNZC+x9vOR/PczVWzOQwps+3OQIAArJNxVBQ4nqf8/EMo5AsxvM+r+lAAPDD4dUySmFNipBy0RW3WQpIh1kMAHmPQIL01cfKznI+ns2MBYQ+WABgzeFVMizjfcv7itlCCgsBAQBrDq+coYC85OESKcdSWE1mMQDYcnilDAUkuPq1joDsTUBuiEAAwHYE8hlTIpqG07sswHg2jZYmaQrIWFfp1pnFAGBTQHoxArJIweGdFGA862pp0k35RHownpdBFR2zGABsObyKqqP+vSI1pXYcQcv4gwKMZ1AWfaAoJG0BOeM+dABwUUCmKQjIYUEEpIOAAEDRBGSJgOxFQNoZCEhwqv8YAQEAmw6vlCAgaaSwWgUYz5o20p8QEAAoagSShoA0CzCeNW2kZyIgzGAAsOnw6hkKSL0A41mTPWWwB4KAAIBVh1dWvn6WgYBUEZC92bAIe0oA4LbDK+lEc98QEfZAfiYgWVRhISAA4ITTO1caa5biQcKvokR0+pqFgNDKHQCsO72gpfs7ArLXMU1dQJi5AGB9xWxUYqUqIEVouxGMZYYRSIUZDAC2nV49EoGkYUXZRC/JEBAAQEAQEAQEACDJ6dUkIFMEZG8ikoWAcAodABCQnI1nOQMBCVrwl5i9AGDb4VV0XzkCsp/xrOr63lQFhJkLAK4IyDMCsteIDgEBgEKlXCYICAICALCLgMypGkJAAAC2cXiVjASkVJDxrGcgIF1mLgC44vRSF5ACjWUJAQGAoji81soeU3R2hekeq+jjIgsB4SAhALjg9MoZCUijIAJympGAcJAQAKw7vUZGAtIpyFjWERAAQEAQEFcF5AMBAQBXnN49AuKdgLAHAgDWnV4LAdmrgDTYRAcABAQBQUAAABCQzASkySY6ABRJQO4QkL2MZR0BAYCiCQhVWPsTkKxSWDVmLwDYdnoHCMheBaSe0YVSCAgAWHd6hxn0wgrauR8UYCwr6saLgAAAAkIvrK3GsoyAAAACsn8BKUIEkqWANJi9AGDb6R1ksOlblAgkSGGd6Y75NMdzgIAAgAtOr4aA7HU86xkJSInZCwC2Hd7Ryl4zEJCDgoxnKQMBGRKBAIALDu9K5wqIQPYznsFBwveUx3MUpMqYvQBg09nVtFqecyPh3sb0LAMBWagjb51ZDAC2nF1Z+fRfCMjexvQ0AwEJbEoaCwBsOrsjpUMQED8F5J5ZDAC2nN31yiZGWmSZooAcFWRMzzMUkAdmMQDYcnZPhkOaSUxmKQhJ0QTkMyMBeWYWA4ANR1fV+Q9TQEayGQKy87gGVW39DNKCU514p6UJAGTu6C5UvmsKyEBtMr4QEAQEACDJ0d1FhGIppzQy9kUQkO3H9SajyrapSrA7zGYAyNLJlSPRRxZVWEURkNsUIrg4W0qobpnRAJClk2tn5OSKWMZ7l6GABNHiKzMaALJycCWdVZgQgex9bINuvPcZjW2Ycgwqvq6Y2QCQhZNrKE8/JQJJTUDGGQnIXD8rKMeuMrsBIAsn95zBOYVo+/EiRCBV3S8/zmhcl0UaXwCw7+Qulfb4hYCkIiBPGUd3vxSJBFFlhRkOAGk5uGD/4yHj/Q8EJN3oI7Qg8mkyywEgLQfXUBvwXwhI7gTkgzQWAKTp4E4z3vtAQNKzaLuZiUqIueoWAPbu3DpKc/xCQHIpIL90NTGXTAHAXh1bSa3bBwhIblNYv1QccciMB4B9OramcuRLBCQTAZlZGuehqrG4qRAA9uLUyrqjYmLJqSEg2dlCnYA5mQ4Ae4s+nixGH7/k1DoFGOuK9plmFsd6ri69bKYDwI+d2l2GJ6OTLLhjpIWAZGajIow3AKTv1D4sO7MiCUhJF0r1LI93kMo6IwoBgF2dWbD3cZjR7Xib7IHUCjLuFVW82R7z95Wd8CYAwC6OrJ3h3RSbRCD1Ao39oQNjHjz3G94EANjFiR2r667t/Y9g8/65gOK9sDzuYZt3DhYCwNZplFsdLLMtIMHZhMuCjX/TgdThTNVYh7wRALCtgLzoRPTMQntxczP3vqDP4FZ7PzbPhPS0qU+bdwDYaQU8VRQytpBW6RdcxB8t7kEtFP09RqOQoMCCtwQAkpxX2zh5PtVKeJBxOmtW9OZ+Wv1/Wj4P0jVTiDotX+MtAYB1AjIyBORLNs1w9dstev5dkeCDxX2oRbiZbkYfCAgArHNc4cVRC4lG1qmrT9Ik/z6LsI3+1HIhAw0WAWDjla+NE+jTMO/OU/jteZyoImps8UwIrU0AYONV7zzhTMYsxXMHgZO85Qn88Twq6oj8ZqGpZZhObPMkAGATh9WOWe2G4jFLIaW1kHO8VPqMHkzxInKjCG2f475IWChMFHn01ZGACAQANnZWV0pjfRoVWLOU9kN6co6cel7/TI50Onywg0hEbZMzIM96Lic8GwDYNo1V09d7OZN3OZZhZFN3Wwdl3j3R0yZxnQNr3z6Thjr23hvPYGpEhjPjzM46G0mEekaJ9kB/50ALhwcJx6H2xKi8AoCNnVVNqay6vlaM/3aqMxp9OZxPWVdfv74Rkan+7IvSI0f6uxGQ9RFIXecwWhKRd8M+ZD1ZV9aXMPQNC9OFh7IDQyg66oN2qp9XNuYDlXEAsJHDKoeHxqLOXY4ldDJHcj6vEoRXicjsmw3zpvF3dbS6xkFt/nzqikZaSmuF9mrYu55F3xD5T0V8jU1+BiMNSfx/Xt+Q3C2YbZQAAAAASUVORK5CYII="},"systems":[{"id":"SYS_循环系统","n":"循环系统","c":83,"tip":"心脏 · 血管 · 血压","side":"r","dx":24,"y":237,"chip":272,"zone":[[16,243,27,31,-14]],"eg":["心包炎","心肌炎","心脏结节病"]},{"id":"SYS_消化系统","n":"消化系统","c":141,"tip":"食管 · 胃肠 · 肝胆胰","side":"l","dx":-30,"y":316,"chip":386,"zone":[[0,330,52,56,0]],"eg":["消化不良","急性肝功能衰竭","复发性阿弗他性口炎"]},{"id":"SYS_皮肤","n":"皮肤","c":89,"tip":"全身皮肤与黏膜","side":"l","dx":-116,"y":296,"chip":330,"zone":[],"eg":["寻常型痤疮","药疹和药物反应","坏疽性脓皮病"]},{"id":"SYS_感觉器官","n":"感觉器官","c":116,"tip":"眼 · 耳 · 鼻 · 咽喉","side":"r","dx":28,"y":74,"chip":112,"zone":[[0,66,31,23,0]],"eg":["梅尼埃病","耳带状疱疹","非过敏性鼻炎"]},{"id":"SYS_内分泌系统","n":"内分泌系统","c":36,"tip":"甲状腺 · 肾上腺 · 垂体","side":"r","dx":2,"y":141,"chip":190,"zone":[[0,143,17,13,0]],"eg":["嗜铬细胞瘤","2型糖尿病","原发性肾上腺皮质功能减退症（艾迪生病）"]},{"id":"SYS_泌尿系统","n":"泌尿系统","c":86,"tip":"肾 · 输尿管 · 膀胱","side":"r","dx":32,"y":348,"chip":386,"zone":[[-38,344,14,22,0],[38,344,14,22,0],[0,404,20,16,0]],"eg":["急进性肾小球肾炎(RPGN)","慢性肾脏病","常染色体显性遗传多囊肾病 (ADPKD)"]},{"id":"SYS_生殖系统","n":"生殖系统","c":101,"tip":"盆腔生殖器官 · 乳腺","side":"l","dx":0,"y":412,"chip":452,"zone":[[0,428,30,32,0]],"eg":["盆腔炎 (PID)","乳腺炎","羊膜腔感染"]},{"id":"SYS_运动系统","n":"运动系统","c":82,"tip":"骨 · 关节 · 肌肉","side":"r","dx":43,"y":578,"chip":612,"zone":[[-43,578,20,26,0],[43,578,20,26,0],[0,300,6,84,0]],"eg":["特发性炎症性肌病","显微镜下多血管炎（MPA）","结节性多动脉炎（PAN）"]},{"id":"SYS_神经系统","n":"神经系统","c":104,"tip":"脑 · 脊髓 · 周围神经","side":"l","dx":-10,"y":44,"chip":78,"zone":[[-6,44,27,31,0]],"eg":["偏头痛","药物滥用性头痛","神经性疼痛"]},{"id":"SYS_呼吸系统","n":"呼吸系统","c":70,"tip":"气管 · 支气管 · 肺","side":"l","dx":-34,"y":205,"chip":240,"zone":[[-27,216,29,53,7],[27,216,29,53,-7]],"eg":["急性支气管炎","支气管扩张","成人咳嗽"]}],"systemic":[{"id":"SYS_药理","n":"药理","c":1,"d":"药物总论","eg":["药物不良反应"]},{"id":"SYS_老年医学","n":"老年医学","c":5,"d":"老年综合评估与常见问题","eg":["老年人步态障碍","老年人病史采集","老年人体格检查"]},{"id":"SYS_血液系统","n":"血液系统","c":52,"d":"贫血 · 凝血异常 · 血液肿瘤","eg":["自体免疫性溶血性贫血","免疫性血小板减少症（ITP）","溶血尿毒综合征（HUS）"]},{"id":"SYS_免疫系统","n":"免疫系统","c":22,"d":"过敏 · 免疫缺陷 · 自身免疫","eg":["药物超敏反应","过敏性鼻炎","血管性水肿"]},{"id":"SYS_营养代谢","n":"营养代谢","c":21,"d":"营养不良 · 维生素缺乏 · 代谢紊乱","eg":["维生素A中毒","维生素D中毒","维生素C缺乏症"]},{"id":"SYS_精神心理","n":"精神心理","c":62,"d":"情绪 · 焦虑 · 成瘾 · 睡眠","eg":["强迫症（OCD）","拔毛癖","精神分裂症"]},{"id":"","n":"法定报告传染病","c":58,"d":"源库未标注解剖系统 · 按法定分类单列","eg":["登革热","流行性感冒","基孔肯雅热"]}],"idx":[["DIS_EVD_BDBV","邦迪布焦型埃博拉病毒病","Disease"],["DIS_COVID19","新型冠状病毒感染","Disease"],["DIS_INFLUENZA","流行性感冒","Disease"],["DIS_DENGUE","登革热","Disease"],["DIS_CHIK","基孔肯雅热","Disease"],["DIS_MPOX","猴痘","Disease"],["DIS_MEASLES","麻疹","Disease"],["DIS_HEPATITIS_B","乙型病毒性肝炎","Disease"],["DIS_HEPATITIS_C","丙型病毒性肝炎","Disease"],["DIS_TB","肺结核","Disease"],["DIS_HIV","艾滋病","Disease"],["DIS_SFTS","发热伴血小板减少综合征","Disease"],["DIS_ALTNV","亚洲长角蜱内罗病毒病","Disease"],["DIS_CHOLERA","霍乱","Disease"],["DIS_RABIES","狂犬病","Disease"],["DIS_HFMD","手足口病","Disease"],["DIS_BRUCELLOSIS","布鲁氏菌病","Disease"],["DIS_MALARIA","疟疾","Disease"],["DIS_POLIO","脊髓灰质炎","Disease"],["DIS_PERTUSSIS","百日咳","Disease"],["DIS_SCARLET","猩红热","Disease"],["DIS_TYPHOID","伤寒","Disease"],["DIS_MUMPS","流行性腮腺炎","Disease"],["DIS_LEGIONELLA","军团病","Disease"],["DIS_SCRUB_TYPHUS","恙虫病","Disease"],["DIS_WEST_NILE","西尼罗热","Disease"],["DIS_QFEVER","Q热","Disease"],["DIS_VARICELLA","水痘","Disease"],["DIS_AHC","急性出血性结膜炎","Disease"],["DIS_HFRS","肾综合征出血热","Disease"],["DIS_SHIGELLOSIS","细菌性痢疾","Disease"],["PAT_BDBV","邦迪布焦病毒","Pathogen"],["PAT_SARSCoV2","SARS-CoV-2","Pathogen"],["PAT_FLU_A","甲型流感病毒","Pathogen"],["PAT_FLU_B","乙型流感病毒","Pathogen"],["PAT_DENV","登革病毒","Pathogen"],["PAT_CHIKV","基孔肯雅病毒","Pathogen"],["PAT_MPXV","猴痘病毒","Pathogen"],["PAT_MEV","麻疹病毒","Pathogen"],["PAT_HBV","乙型肝炎病毒","Pathogen"],["PAT_HCV","丙型肝炎病毒","Pathogen"],["PAT_HAV","甲型肝炎病毒","Pathogen"],["PAT_HEV","戊型肝炎病毒","Pathogen"],["PAT_MTB","结核分枝杆菌","Pathogen"],["PAT_HIV","人类免疫缺陷病毒","Pathogen"],["PAT_DBV","大别班达病毒","Pathogen"],["PAT_ALTNV","亚洲长角蜱内罗病毒","Pathogen"],["PAT_VCHOLERAE","霍乱弧菌","Pathogen"],["PAT_RABV","狂犬病病毒","Pathogen"],["PAT_EV71","肠道病毒71型","Pathogen"],["PAT_CA16","柯萨奇病毒A16型","Pathogen"],["PAT_EV70","肠道病毒70型","Pathogen"],["PAT_CA24","柯萨奇病毒A24型","Pathogen"],["PAT_BRUCELLA","布鲁氏菌","Pathogen"],["PAT_PLASMODIUM","疟原虫","Pathogen"],["PAT_POLIOV","脊髓灰质炎病毒","Pathogen"],["PAT_BPERTUSSIS","百日咳鲍特菌","Pathogen"],["PAT_SPYOGENES","A组链球菌","Pathogen"],["PAT_STYPHI","伤寒沙门菌","Pathogen"],["PAT_MUMPSV","腮腺炎病毒","Pathogen"],["PAT_LPNEUMO","嗜肺军团菌","Pathogen"],["PAT_OTSUTSU","恙虫病东方体","Pathogen"],["PAT_WNV","西尼罗病毒","Pathogen"],["PAT_CBURNETII","贝纳柯克斯体","Pathogen"],["PAT_VZV","水痘-带状疱疹病毒","Pathogen"],["PAT_HANTAV","汉坦病毒","Pathogen"],["PAT_SHIGELLA","志贺菌","Pathogen"],["STR_OMICRON","奥密克戎变异株","Strain"],["STR_NB181","NB.1.8.1","Strain"],["STR_H3N2","甲型H3N2","Strain"],["STR_H1N1","甲型H1N1pdm09","Strain"],["STR_BVICTORIA","乙型Victoria系","Strain"],["STR_BYAMAGATA","乙型Yamagata系","Strain"],["STR_DENV1","登革病毒1型","Strain"],["STR_DENV2","登革病毒2型","Strain"],["STR_DENV3","登革病毒3型","Strain"],["STR_DENV4","登革病毒4型","Strain"],["STR_MPXV_IA","猴痘病毒Clade Ia","Strain"],["STR_MPXV_IB","猴痘病毒Clade Ib","Strain"],["STR_MPXV_IIB","猴痘病毒Clade IIb","Strain"],["STR_MPXV_RECOMB","猴痘Clade Ib/IIb重组株","Strain"],["STR_CVDPV2","循环型疫苗衍生脊灰病毒2型","Strain"],["VEC_AEDES_ALBO","白纹伊蚊","Vector"],["VEC_AEDES_AEGYPTI","埃及伊蚊","Vector"],["VEC_AEDES","伊蚊属","Vector"],["VEC_HLONGICORNIS","亚洲长角蜱","Vector"],["VEC_ANOPHELES","按蚊属","Vector"],["VEC_LEPTOTROMBIDIUM","恙螨","Vector"],["VEC_CULEX","库蚊属","Vector"],["HOST_BAT","蝙蝠","Host"],["HOST_PRIMATE","非人灵长类","Host"],["HOST_RODENT","啮齿动物","Host"],["HOST_CATTLE","牛","Host"],["HOST_SHEEP","羊","Host"],["HOST_PIG","猪","Host"],["HOST_BIRD","禽类","Host"],["HOST_HUMAN","人","Host"],["HOST_MOSQUITO","蚊","Host"],["SYM_FEVER","发热","Symptom"],["SYM_HIGH_FEVER","高热","Symptom"],["SYM_HEADACHE","头痛","Symptom"],["SYM_RETROORBITAL_PAIN","眼眶痛","Symptom"],["SYM_ARTHRALGIA","关节痛","Symptom"],["SYM_SMALL_JOINT_PAIN","小关节剧痛","Symptom"],["SYM_MYALGIA","肌肉酸痛","Symptom"],["SYM_RASH","皮疹","Symptom"],["SYM_FATIGUE","乏力/疲劳","Symptom"],["SYM_VOMITING","呕吐","Symptom"],["SYM_DIARRHEA","腹泻","Symptom"],["SYM_ABDOMINAL_PAIN","腹痛","Symptom"],["SYM_COUGH","咳嗽","Symptom"],["SYM_SORE_THROAT","咽痛","Symptom"],["SYM_CORYZA","鼻塞流涕","Symptom"],["SYM_PETECHIAE","出血点","Symptom"],["SYM_THROMBOCYTOPENIA","血小板减少","Symptom"],["SYM_TRANSAMINASE_ELEVATION","转氨酶升高","Symptom"],["SYM_LYMPHADENOPATHY","淋巴结肿大","Symptom"],["SYM_JAUNDICE","黄疸","Symptom"],["SYM_CONFUSION","意识模糊","Symptom"],["SYM_DYSPNEA","呼吸困难","Symptom"],["SYM_DEHYDRATION","脱水","Symptom"],["SYM_VESICLE","疱疹","Symptom"],["SYM_CONJUNCTIVAL_INJECTION","结膜充血","Symptom"],["SYM_HEPATOSPLENOMEGALY","肝脾肿大","Symptom"],["SYM_ESCHAR","焦痂","Symptom"],["SYM_HEMORRHAGE","出血","Symptom"],["SYM_HYDROPHOBIA","恐水","Symptom"],["SYM_NIGHT_SWEAT","盗汗","Symptom"],["SYN_SFTS","发热伴血小板减少综合征","Syndrome"],["SYN_DSS","登革休克综合征","Syndrome"],["SYN_FLU_LIKE","流感样综合征","Syndrome"],["SYN_HFRS","肾综合征出血热","Syndrome"],["CMP_PNEUMONIA","肺炎","Complication"],["CMP_MYOCARDITIS","心肌炎","Complication"],["CMP_ENCEPHALITIS","脑炎","Complication"],["CMP_AKI","急性肾损伤","Complication"],["CMP_RESP_FAILURE","呼吸功能衰竭","Complication"],["CMP_CIRRHOSIS","肝硬化","Complication"],["CMP_HCC","肝细胞癌","Complication"],["CMP_LIVER_FIBROSIS","肝纤维化","Complication"],["CMP_OPPORTUNISTIC","机会性感染","Complication"],["CMP_SEPSIS","脓毒症","Complication"],["CMP_AFP","急性弛缓性麻痹","Complication"],["CMP_SSPE","亚急性硬化性全脑炎","Complication"],["CMP_HYPOVOLEMIC_SHOCK","低血容量休克","Complication"],["CMP_CHRONIC_ARTHRALGIA","慢性关节痛","Complication"],["DRG_PARACETAMOL","对乙酰氨基酚","Drug"],["DRG_ASPIRIN","阿司匹林","Drug"],["DRG_IBUPROFEN","布洛芬","Drug"],["DRG_OSELTAMIVIR","奥司他韦","Drug"],["DRG_NIRMATRELVIR","奈玛特韦/利托那韦","Drug"],["DRG_MOLNUPIRAVIR","莫诺拉韦","Drug"],["DRG_DOXYCYCLINE","多西环素","Drug"],["DRG_ARTESUNATE","青蒿琥酯","Drug"],["DRG_RIFAMPICIN","利福平","Drug"],["DRG_ISONIAZID","异烟肼","Drug"],["DRG_TENOFOVIR","替诺福韦","Drug"],["DRG_ENTECAVIR","恩替卡韦","Drug"],["DRG_SOFOSBUVIR","索磷布韦","Drug"],["DRG_ORS","口服补液盐","Drug"],["DRG_CEFTRIAXONE","头孢曲松","Drug"],["DRG_AZITHROMYCIN","阿奇霉素","Drug"],["DRG_PENICILLIN","青霉素","Drug"],["DRG_RABIES_IG","狂犬病免疫球蛋白","Drug"],["DRG_TMP_SMX","复方磺胺甲噁唑","Drug"],["VAC_FLU3","三价流感疫苗","Vaccine"],["VAC_FLU4","四价流感疫苗","Vaccine"],["VAC_COVID","新冠疫苗","Vaccine"],["VAC_MPOX","MVA-BN猴痘疫苗","Vaccine"],["VAC_MMR","麻腮风疫苗","Vaccine"],["VAC_HEPB","乙肝疫苗","Vaccine"],["VAC_IPV","脊灰灭活疫苗","Vaccine"],["VAC_OPV","脊灰减毒活疫苗","Vaccine"],["VAC_RABIES","狂犬病疫苗","Vaccine"],["VAC_VARICELLA","水痘疫苗","Vaccine"],["VAC_DTP","百白破疫苗","Vaccine"],["VAC_BCG","卡介苗","Vaccine"],["VAC_DENGUE","登革热疫苗","Vaccine"],["VAC_CHOLERA","霍乱疫苗","Vaccine"],["VAC_BDBV","邦迪布焦病毒疫苗","Vaccine"],["TST_PCR","核酸检测(PCR)","DiagnosticTest"],["TST_RDT","抗原快速检测","DiagnosticTest"],["TST_MNGS","宏基因组测序(mNGS)","DiagnosticTest"],["TST_METAGENOMIC","宏转录组测序","DiagnosticTest"],["TST_ELISA_IGM","IgM抗体检测","DiagnosticTest"],["TST_GENEXPERT","GeneXpert","DiagnosticTest"],["TST_BLOOD_CULTURE","血培养","DiagnosticTest"],["TST_PLATELET","血小板计数","DiagnosticTest"],["TST_LFT","肝功能检查","DiagnosticTest"],["TST_VIRUS_ISOLATION","病毒分离","DiagnosticTest"],["TST_IGRA","结核感染T细胞检测","DiagnosticTest"],["INT_MOSQUITO_KILL","成蚊杀灭","Intervention"],["INT_BREEDING_SITE","清除孳生地","Intervention"],["INT_1335","1335措施","Intervention"],["INT_ANTI_MOSQUITO_ISOLATION","防蚊隔离","Intervention"],["INT_CONTACT_TRACING","接触者追踪","Intervention"],["INT_21DAY_MONITOR","21天医学观察","Intervention"],["INT_SAFE_BURIAL","安全尊严葬礼","Intervention"],["INT_IPC","院内感染控制","Intervention"],["INT_VENTILATION","通风","Intervention"],["INT_MASK","戴口罩","Intervention"],["INT_HAND_HYGIENE","手卫生","Intervention"],["INT_ISOLATION","隔离治疗","Intervention"],["INT_ENTRY_SCREENING","入境筛查","Intervention"],["INT_VECTOR_SURVEILLANCE","蚊媒监测","Intervention"],["INT_TRAVEL_ADVISORY","旅行健康提示","Intervention"],["REG_CHINA","中国","Region"],["REG_GUANGDONG","广东省","Region"],["REG_GUANGZHOU","广州市","Region"],["REG_FOSHAN","佛山市","Region"],["REG_ZHAOQING","肇庆市","Region"],["REG_JIANGMEN","江门市","Region"],["REG_ZHONGSHAN","中山市","Region"],["REG_FUJIAN","福建省","Region"],["REG_GUANGXI","广西壮族自治区","Region"],["REG_HAINAN","海南省","Region"],["REG_YUNNAN","云南省","Region"],["REG_DRC","刚果民主共和国","Region"],["REG_ITURI","伊图里省","Region"],["REG_UGANDA","乌干达","Region"],["REG_KAMPALA","坎帕拉","Region"],["REG_MADAGASCAR","马达加斯加","Region"],["REG_ANGOLA","安哥拉","Region"],["REG_KENYA","肯尼亚","Region"],["REG_USA","美国","Region"],["REG_BRAZIL","巴西","Region"],["REG_BANGLADESH","孟加拉国","Region"],["REG_NEPAL","尼泊尔","Region"],["REG_GREECE","希腊","Region"],["REG_HK","中国香港","Region"],["REG_TW","中国台湾","Region"],["REG_MYANMAR","缅甸","Region"],["REG_UAE","阿联酋","Region"],["REG_GERMANY","德国","Region"],["REG_PAKISTAN","巴基斯坦","Region"],["REG_INDIA","印度","Region"],["REG_AFRICA","非洲区","Region"],["REG_AMERICAS","美洲区","Region"],["REG_EUROPE","欧洲区","Region"],["POP_ELDERLY65","65岁以上老年人","Population"],["POP_CHILD_UNDER5","5岁以下儿童","Population"],["POP_INFANT","婴幼儿","Population"],["POP_PREGNANT","孕妇","Population"],["POP_CHRONIC","慢性病患者","Population"],["POP_HCW","医务人员","Population"],["POP_MSM","男男性行为者","Population"],["POP_IMMUNOCOMPROMISED","免疫低下人群","Population"],["POP_LIVESTOCK","牲畜接触者","Population"],["POP_OUTDOOR","野外作业者","Population"],["POP_TRAVELER","国际旅行者","Population"],["POP_SCHOOLCHILD","学龄儿童","Population"],["POL_PHEIC","PHEIC（国际关注的突发公共卫生事件）","Policy"],["POL_IHR2005","国际卫生条例(2005)","Policy"],["POL_CLASS_A","甲类传染病管理","Policy"],["POL_CLASS_B","乙类传染病管理","Policy"],["POL_CLASS_C","丙类传染病管理","Policy"],["POL_CLASS_B_MGMT","乙类乙管","Policy"],["POL_TWO_DISEASE","登革热和基孔肯雅热防控方案(2026年版)","Policy"],["POL_PHEIC_MPOX","猴痘PHEIC常设建议","Policy"],["DIS_PLAGUE","鼠疫","Disease"],["DIS_SARS","传染性非典型肺炎","Disease"],["DIS_AVIAN_FLU","人感染高致病性禽流感","Disease"],["DIS_H7N9","人感染H7N9禽流感","Disease"],["DIS_JE","流行性乙型脑炎","Disease"],["DIS_ANTHRAX","炭疽","Disease"],["DIS_MENINGITIS","流行性脑脊髓膜炎","Disease"],["DIS_DIPHTHERIA","白喉","Disease"],["DIS_TETANUS_NEO","新生儿破伤风","Disease"],["DIS_GONORRHEA","淋病","Disease"],["DIS_SYPHILIS","梅毒","Disease"],["DIS_LEPTOSPIROSIS","钩端螺旋体病","Disease"],["DIS_SCHISTOSOMIASIS","血吸虫病","Disease"],["DIS_HEPATITIS_A","甲型病毒性肝炎","Disease"],["DIS_HEPATITIS_D","丁型病毒性肝炎","Disease"],["DIS_HEPATITIS_E","戊型病毒性肝炎","Disease"],["DIS_RUBELLA","风疹","Disease"],["DIS_LEPROSY","麻风病","Disease"],["DIS_TYPHUS","流行性和地方性斑疹伤寒","Disease"],["DIS_LEISHMANIASIS","黑热病","Disease"],["DIS_ECHINOCOCCOSIS","包虫病","Disease"],["DIS_FILARIASIS","丝虫病","Disease"],["DIS_OTHER_DIARRHEA","其他感染性腹泻病","Disease"],["DIS_NEW_FLU","人感染新亚型流感","Disease"],["DIS_CLONORCHIASIS","肝吸虫病","Disease"],["DIS_STREP_SUIS","人感染猪链球菌病","Disease"],["DIS_MERS","中东呼吸综合征","Disease"],["DIS_EBOLA","埃博拉出血热","Disease"],["DIS_ZIKA","寨卡病毒病","Disease"],["DIS_LASSA","拉沙热","Disease"],["DIS_HEPATITIS_UNK","未分型病毒性肝炎","Disease"],["PAT_SARSCoV1","SARS冠状病毒","Pathogen"],["PAT_H5N1","甲型流感病毒H5N1","Pathogen"],["PAT_H7N9","甲型流感病毒H7N9","Pathogen"],["PAT_JEV","乙型脑炎病毒","Pathogen"],["PAT_BANTHRACIS","炭疽芽孢杆菌","Pathogen"],["PAT_NMENINGITIDIS","脑膜炎奈瑟菌","Pathogen"],["PAT_CDIPHTHERIAE","白喉棒状杆菌","Pathogen"],["PAT_CTETANI","破伤风梭菌","Pathogen"],["PAT_NGONORRHOEAE","淋病奈瑟菌","Pathogen"],["PAT_TPALLIDUM","梅毒螺旋体","Pathogen"],["PAT_LEPTOSPIRA","致病性钩端螺旋体","Pathogen"],["PAT_SCHISTOSOMA","血吸虫","Pathogen"],["PAT_HDV","丁型肝炎病毒","Pathogen"],["PAT_RUBELLAV","风疹病毒","Pathogen"],["PAT_MMLEPRAE","麻风分枝杆菌","Pathogen"],["PAT_RICKETTSIA","斑疹伤寒立克次体","Pathogen"],["PAT_LEISHMANIA","利什曼原虫","Pathogen"],["PAT_ECHINOCOCCUS","棘球绦虫","Pathogen"],["PAT_WUCHERERIA","班氏吴策线虫","Pathogen"],["PAT_NOROVIRUS","诺如病毒","Pathogen"],["PAT_ROTAVIRUS","轮状病毒","Pathogen"],["PAT_YERSINIA","鼠疫耶尔森菌","Pathogen"],["PAT_CLONORCHIS","华支睾吸虫","Pathogen"],["PAT_STREP_SUIS","猪链球菌2型","Pathogen"],["PAT_MERSCOV","中东呼吸综合征冠状病毒","Pathogen"],["PAT_EBOV","埃博拉病毒","Pathogen"],["PAT_ZIKV","寨卡病毒","Pathogen"],["PAT_LASV","拉沙病毒","Pathogen"],["VAC_JEV","乙脑疫苗","Vaccine"],["VAC_ANTHRAX","炭疽疫苗","Vaccine"],["VAC_MENINGOCOCCAL","流脑疫苗","Vaccine"],["VAC_HEPA","甲肝疫苗","Vaccine"],["VAC_HEPE","戊肝疫苗","Vaccine"],["VAC_LEPTO","钩体疫苗","Vaccine"],["VAC_SCHISTO","血吸虫疫苗","Vaccine"],["DIS_OTORRHEA","耳漏","Disease"],["DIS_OTALGIA","耳痛","Disease"],["DIS_TINNITUS","耳鸣","Disease"],["DIS_DIZZINESS_AND_VERTIGO","平衡异常感和眩晕","Disease"],["DIS_EPISTAXIS","鼻衄","Disease"],["DIS_NASAL_CONGESTION_AND_RHINORRHEA","鼻塞和鼻漏","Disease"],["DIS_NECK_MASS","颈部肿块","Disease"],["DIS_SORE_THROAT","咽喉痛","Disease"],["DIS_ANOSMIA","嗅觉缺失症","Disease"],["DIS_DERMATITIS_OF_THE_EAR_CANAL_CHRONIC_OTITIS_EXTERNA","耳道皮炎（慢性外耳道炎）","Disease"],["DIS_EXTERNAL_OTITIS_ACUTE","外耳道炎（急性）","Disease"],["DIS_MALIGNANT_EXTERNAL_OTITIS","恶性外耳道炎","Disease"],["DIS_EXTERNAL_EAR_OBSTRUCTIONS","外耳阻塞","Disease"],["DIS_PERICHONDRITIS_OF_THE_EAR","软骨膜炎","Disease"],["DIS_HEARING_LOSS","听力损失","Disease"],["DIS_SUDDEN_HEARING_LOSS","突发性耳聋","Disease"],["DIS_HOW_TO_REMOVE_CERUMEN_MANUALLY_AND_WITH_IRRIGATION","如何手工和灌洗去除耵聍","Disease"],["DIS_HOW_TO_DRAIN_AN_AURICULAR_HEMATOMA","如何引流耳廓血肿","Disease"],["DIS_HOW_TO_REMOVE_A_FOREIGN_BODY_FROM_THE_EXTERNAL_EAR","如何去除外耳中的异物","Disease"],["DIS_HOW_TO_TREAT_ANTERIOR_EPISTAXIS_WITH_MAKESHIFT_NASAL_CLIP","如何用临时鼻夹治疗前鼻出血","Disease"],["DIS_HOW_TO_TREAT_ANTERIOR_EPISTAXIS_WITH_NASAL_PACKING","如何用鼻填塞术治疗前鼻出血","Disease"],["DIS_HOW_TO_TREAT_POSTERIOR_EPISTAXIS_WITH_A_BALLOON","如何用球囊治疗后鼻衄","Disease"],["DIS_HOW_TO_TREAT_ANTERIOR_EPISTAXIS_WITH_CAUTERY","如何用烧灼术治疗前鼻出血","Disease"],["DIS_HOW_TO_REMOVE_A_FOREIGN_BODY_FROM_THE_NOSE","如何去除鼻子中的异物","Disease"],["DIS_HOW_TO_DO_MIRROR_LARYNGOSCOPY","如何做间接喉镜检查","Disease"],["DIS_HOW_TO_DRAIN_A_PERITONSILLAR_ABSCESS","如何引流扁桃体周围脓肿","Disease"],["DIS_HOW_TO_SWAB_A_THROAT_FOR_TESTING","如何进行咽拭子检查","Disease"],["DIS_HOW_TO_DO_FLEXIBLE_LARYNGOSCOPY","如何做柔性喉镜检查","Disease"],["DIS_THIRD_WINDOW_SYNDROME","第三窗口综合征","Disease"],["DIS_VESTIBULAR_SCHWANNOMA","前庭神经鞘瘤","Disease"],["DIS_BENIGN_PAROXYSMAL_POSITIONAL_VERTIGO","良性阵发性位置性眩晕","Disease"],["DIS_DRUG_INDUCED_OTOTOXICITY","药物引起的耳毒性","Disease"],["DIS_HERPES_ZOSTER_OTICUS","耳带状疱疹","Disease"],["DIS_MENIERE_DISEASE","梅尼埃病","Disease"],["DIS_PURULENT_LABYRINTHITIS","化脓性迷路炎","Disease"],["DIS_VESTIBULAR_NEURONITIS","前庭神经元炎","Disease"],["DIS_LARYNGOTRACHEAL_STENOSIS","喉气管狭窄","Disease"],["DIS_LARYNGITIS","喉炎","Disease"],["DIS_LARYNGEAL_DYSTONIA","喉部肌张力障碍","Disease"],["DIS_VOCAL_FOLD_PARALYSIS","声带麻痹","Disease"],["DIS_VOCAL_FOLD_POLYPS_NODULES_AND_GRANULOMAS","声带息肉、小结和肉芽肿","Disease"],["DIS_CHOLESTEATOMA","胆脂瘤","Disease"],["DIS_MASTOIDITIS","乳突炎","Disease"],["DIS_OTITIS_MEDIA_ACUTE","中耳炎（急性）","Disease"],["DIS_OTITIS_MEDIA_SEROUS","中耳炎（分泌性）","Disease"],["DIS_OTITIS_MEDIA_CHRONIC_SUPPURATIVE","中耳炎（慢性化脓性）","Disease"],["DIS_OTIC_BAROTRAUMA","耳气压伤","Disease"],["DIS_OTOSCLEROSIS","耳硬化症","Disease"],["DIS_TRAUMATIC_PERFORATION_OF_THE_TYMPANIC_MEMBRANE","鼓膜外伤性穿孔","Disease"],["DIS_NASAL_POLYPS","鼻息肉","Disease"],["DIS_NONALLERGIC_RHINITIS","非过敏性鼻炎","Disease"],["DIS_SINUSITIS","鼻窦炎","Disease"],["DIS_SIALADENITIS","涎腺炎","Disease"],["DIS_SALIVARY_STONES","涎石症","Disease"],["DIS_SUBMANDIBULAR_SPACE_INFECTION","下颌下间隙感染","Disease"],["DIS_ADENOID_HYPERTROPHY","腺样体肥大","Disease"],["DIS_RETROPHARYNGEAL_ABSCESS","咽后脓肿","Disease"],["DIS_VELOPHARYNGEAL_INSUFFICIENCY","腭咽闭合不全","Disease"],["DIS_TONSILLOPHARYNGITIS","扁桃体咽炎","Disease"],["DIS_PERITONSILLAR_ABSCESS_AND_CELLULITIS","扁桃体周围脓肿及蜂窝织炎","Disease"],["DIS_PARAPHARYNGEAL_ABSCESS","咽旁脓肿","Disease"],["DIS_EPIGLOTTITIS","会厌炎","Disease"],["DIS_COUGH_IN_ADULTS","成人咳嗽","Disease"],["DIS_DYSPNEA","呼吸困难","Disease"],["DIS_HYPERVENTILATION_SYNDROME","过度通气综合征","Disease"],["DIS_HEMOPTYSIS","咯血","Disease"],["DIS_SOLITARY_PULMONARY_NODULE","孤立性肺结节","Disease"],["DIS_STRIDOR","喘鸣","Disease"],["DIS_VOCAL_FOLD_DYSFUNCTION","声带功能障碍","Disease"],["DIS_WHEEZING","哮鸣","Disease"],["DIS_BRONCHOSCOPY","支气管镜检查","Disease"],["DIS_MEDIASTINOSCOPY_AND_MEDIASTINOTOMY","纵隔镜检查和纵隔切开术","Disease"],["DIS_THORACOSCOPY_AND_VIDEO_ASSISTED_THORACOSCOPIC_SURGERY","胸腔镜检查和电视辅助胸腔镜手术","Disease"],["DIS_THORACOTOMY","开胸术","Disease"],["DIS_TRANSTHORACIC_NEEDLE_BIOPSY","经胸腔细针活检","Disease"],["DIS_HOW_TO_DO_NEEDLE_THORACOSTOMY","如何进行针刺胸腔造口术","Disease"],["DIS_HOW_TO_DO_THORACENTESIS","怎样做胸腔穿刺术","Disease"],["DIS_HOW_TO_DO_TUBE_AND_CATHETER_THORACOSTOMY","如何进行管导管胸腔造口术","Disease"],["DIS_ACUTE_BRONCHITIS","急性支气管炎","Disease"],["DIS_ASTHMA","哮喘","Disease"],["DIS_ALLERGIC_BRONCHOPULMONARY_ASPERGILLOSIS_ABPA","变应性支气管肺曲菌病（ABPA）","Disease"],["DIS_ATELECTASIS","肺不张","Disease"],["DIS_BRONCHIECTASIS","支气管扩张","Disease"],["DIS_CHRONIC_OBSTRUCTIVE_PULMONARY_DISEASE_COPD","慢性阻塞性肺病（COPD）","Disease"],["DIS_ALPHA_1_ANTITRYPSIN_DEFICIENCY","alpha1-抗胰蛋白酶缺乏症","Disease"],["DIS_DIFFUSE_ALVEOLAR_HEMORRHAGE","弥漫性肺泡出血","Disease"],["DIS_IDIOPATHIC_PULMONARY_HEMOSIDEROSIS","特发性肺含铁血黄素沉着症","Disease"],["DIS_PULMONARY_RENAL_SYNDROME","肺肾综合征","Disease"],["DIS_ANTI_GLOMERULAR_BASEMENT_MEMBRANE_ANTI_GBM_DISEASE","抗肾小球基底膜病","Disease"],["DIS_ASBESTOSIS","石棉肺","Disease"],["DIS_MESOTHELIOMA","胸膜间皮瘤","Disease"],["DIS_AIR_POLLUTION_RELATED_ILLNESS","空气污染相关性疾病","Disease"],["DIS_BERYLLIUM_DISEASE","铍病","Disease"],["DIS_BUILDING_RELATED_ILLNESSES","建筑物相关性疾病","Disease"],["DIS_BYSSINOSIS","棉尘肺","Disease"],["DIS_COAL_WORKER_PNEUMOCONIOSIS","煤工尘肺","Disease"],["DIS_WORK_RELATED_ASTHMA","与工作有关的哮喘","Disease"],["DIS_SILICOSIS","矽肺","Disease"],["DIS_IRRITANT_GAS_INHALATION_INJURY","有毒物吸入性肺损伤","Disease"],["DIS_IDIOPATHIC_PLEUROPARENCHYMAL_FIBROELASTOSIS","特发性胸膜肺弹力纤维增生症","Disease"],["DIS_IDIOPATHIC_PULMONARY_FIBROSIS_IPF","特发性肺纤维化","Disease"],["DIS_DESQUAMATIVE_INTERSTITIAL_PNEUMONIA_DIP","脱屑性间质性肺炎","Disease"],["DIS_NONSPECIFIC_INTERSTITIAL_PNEUMONIA_NSIP","非特异性间质性肺炎","Disease"],["DIS_CRYPTOGENIC_ORGANIZING_PNEUMONIA_COP","原因未明的组织性肺炎","Disease"],["DIS_RESPIRATORY_BRONCHIOLITIS_ASSOCIATED_INTERSTITIAL_LUNG_DISEASE_RBILD","呼吸性细支气管相关性间质性肺炎","Disease"],["DIS_ACUTE_INTERSTITIAL_PNEUMONIA_AIP","急性间质性肺炎","Disease"],["DIS_CHRONIC_EOSINOPHILIC_PNEUMONIA","慢性嗜酸性粒细胞性肺炎","Disease"],["DIS_ACUTE_EOSINOPHILIC_PNEUMONIA","急性嗜酸细胞性肺炎","Disease"],["DIS_DRUG_INDUCED_PULMONARY_DISEASE","药物诱发肺疾病","Disease"],["DIS_HYPERSENSITIVITY_PNEUMONITIS","过敏性肺炎","Disease"],["DIS_LYMPHANGIOLEIOMYOMATOSIS","淋巴管平滑肌瘤病","Disease"],["DIS_LYMPHOID_INTERSTITIAL_PNEUMONIA_LIP","淋巴细胞性间质性肺炎（LIP）","Disease"],["DIS_PULMONARY_ALVEOLAR_PROTEINOSIS","肺泡蛋白沉积症","Disease"],["DIS_PULMONARY_LANGERHANS_CELL_HISTIOCYTOSIS","肺朗格汉斯细胞组织细胞增生症","Disease"],["DIS_LUNG_ABSCESS","肺脓肿","Disease"],["DIS_MEDIASTINAL_MASSES","纵隔肿块","Disease"],["DIS_PLEURAL_EFFUSION","胸腔积液","Disease"],["DIS_PNEUMOMEDIASTINUM","纵隔气肿","Disease"],["DIS_PNEUMOTHORAX","气胸","Disease"],["DIS_VENTILATOR_ASSOCIATED_PNEUMONIA","呼吸机相关性肺炎","Disease"],["DIS_COMMUNITY_ACQUIRED_PNEUMONIA","社区获得性肺炎","Disease"],["DIS_HOSPITAL_ACQUIRED_PNEUMONIA","医院获得性肺炎","Disease"],["DIS_PNEUMONIA_IN_IMMUNOCOMPROMISED_PATIENTS","免疫缺陷患者肺炎","Disease"],["DIS_CHEMICAL_PNEUMONITIS_AND_ASPIRATION_PNEUMONIA","吸入性肺炎","Disease"],["DIS_PULMONARY_EMBOLISM_PE","肺栓塞（PE）","Disease"],["DIS_HEPATOPULMONARY_SYNDROME","肝肺综合征","Disease"],["DIS_PULMONARY_HYPERTENSION","肺动脉高压","Disease"],["DIS_LUNG_AND_HEART_LUNG_TRANSPLANTATION","肺和心肺联合移植","Disease"],["DIS_SARCOIDOSIS","结节病","Disease"],["DIS_OBSTRUCTIVE_SLEEP_APNEA_OSA","阻塞性睡眠呼吸暂停","Disease"],["DIS_OBSTRUCTIVE_SLEEP_APNEA_OSA_IN_CHILDREN","儿童阻塞性睡眠呼吸暂停","Disease"],["DIS_CENTRAL_SLEEP_APNEA_CSA","中枢性睡眠呼吸暂停","Disease"],["DIS_EOSINOPHILIC_FASCIITIS","嗜酸性粒细胞性筋膜炎","Disease"],["DIS_MIXED_CONNECTIVE_TISSUE_DISEASE_MCTD","混合性结缔组织病（MCTD）","Disease"],["DIS_IDIOPATHIC_INFLAMMATORY_MYOPATHIES","特发性炎症性肌病","Disease"],["DIS_RELAPSING_POLYCHONDRITIS","复发性多软骨炎","Disease"],["DIS_SYSTEMIC_LUPUS_ERYTHEMATOSUS_SLE","系统性红斑狼疮（SLE）","Disease"],["DIS_SYSTEMIC_SCLEROSIS","系统性硬化症","Disease"],["DIS_POPLITEAL_CYSTS","腘窝囊肿","Disease"],["DIS_BURSITIS","滑囊炎","Disease"],["DIS_TENDINOPATHY","肌腱病","Disease"],["DIS_FIBROMYALGIA","纤维肌痛综合征","Disease"],["DIS_COCCYGEAL_AREA_PAIN","尾骨区域疼痛","Disease"],["DIS_COCCYX_DISORDERS","尾骨疾病","Disease"],["DIS_GOUT","痛风","Disease"],["DIS_CALCIUM_PYROPHOSPHATE_DEPOSITION_DISEASE","焦磷酸钙沉积病","Disease"],["DIS_ACHILLES_TENDINOPATHY","跟腱病","Disease"],["DIS_METATARSOPHALANGEAL_JOINT_PAIN","跖趾关节痛","Disease"],["DIS_SESAMOIDITIS","籽骨炎","Disease"],["DIS_ACHILLES_TENDON_ENTHESOPATHY","跟腱附着点病","Disease"],["DIS_ANTERIOR_ACHILLES_TENDON_BURSITIS","跟腱前滑囊炎","Disease"],["DIS_BUNION","拇囊炎","Disease"],["DIS_APOPHYSITIS_OF_THE_CALCANEUS","跟骨突起炎","Disease"],["DIS_FREIBERG_DISEASE","跖骨头骨软骨病（Freiberg病）","Disease"],["DIS_HAMMER_TOE_DEFORMITY","锤状趾","Disease"],["DIS_INFERIOR_CALCANEAL_BURSITIS","跟下滑囊炎","Disease"],["DIS_INTERDIGITAL_NEUROMA","指间神经瘤","Disease"],["DIS_MEDIAL_AND_LATERAL_PLANTAR_NERVE_ENTRAPMENT","足底内侧和外侧神经卡压","Disease"],["DIS_PLANTAR_FASCIITIS","足底筋膜炎","Disease"],["DIS_PLANTAR_FIBROMATOSIS","足底纤维瘤病","Disease"],["DIS_POSTERIOR_ACHILLES_TENDON_BURSITIS","跟腱后滑囊炎","Disease"],["DIS_TARSAL_TUNNEL_SYNDROME","跗管综合征","Disease"],["DIS_TIBIALIS_POSTERIOR_TENDINOSIS_AND_TIBIALIS_POSTERIOR_TENOSYNOVITIS","胫后肌腱病和胫后肌腱炎","Disease"],["DIS_CARPAL_TUNNEL_SYNDROME","腕管综合征","Disease"],["DIS_CUBITAL_TUNNEL_SYNDROME","肘管综合征","Disease"],["DIS_DE_QUERVAIN_SYNDROME","De Quervain综合征","Disease"],["DIS_TRIGGER_FINGER_STENOSING_FLEXOR_TENOSYNOVITIS","扳机指（狭窄性屈肌腱鞘炎）","Disease"],["DIS_DUPUYTREN_CONTRACTURE","杜普伊特伦挛缩（掌腱膜挛缩症）","Disease"],["DIS_INFECTIOUS_FLEXOR_TENOSYNOVITIS","感染性屈肌腱鞘炎","Disease"],["DIS_OSTEOARTHRITIS_OF_THE_HAND","手部骨关节炎","Disease"],["DIS_INFECTED_BITE_WOUNDS_OF_THE_HAND","手部咬伤所致感染","Disease"],["DIS_RADIAL_TUNNEL_SYNDROME","桡管综合征","Disease"],["DIS_GANGLIA","腱鞘囊肿","Disease"],["DIS_HOW_TO_DO_ANKLE_ARTHROCENTESIS","如何进行踝关节穿刺术","Disease"],["DIS_HOW_TO_DO_KNEE_ARTHROCENTESIS","如何进行膝关节穿刺术","Disease"],["DIS_HOW_TO_DO_METATARSOPHALANGEAL_JOINT_ARTHROCENTESIS","如何做跖趾关节穿刺术","Disease"],["DIS_HOW_TO_DO_ELBOW_ARTHROCENTESIS","怎样做肘关节穿刺","Disease"],["DIS_HOW_TO_DO_METACARPOPHALANGEAL_AND_INTERPHALANGEAL_JOINT_ARTHROCENTESIS","如何进行掌指和指间关节穿刺术","Disease"],["DIS_HOW_TO_DO_SHOULDER_ARTHROCENTESIS","如何进行肩关节穿刺术","Disease"],["DIS_HOW_TO_DO_WRIST_ARTHROCENTESIS","怎样做腕关节穿刺","Disease"],["DIS_HOW_TO_INJECT_A_SUBACROMIAL_BURSA","如何注射肩峰下囊","Disease"],["DIS_HOW_TO_ASPIRATE_OR_INJECT_AN_OLECRANON_BURSA","如何抽吸或注射鹰嘴滑囊","Disease"],["DIS_HOW_TO_ASPIRATE_OR_INJECT_A_PREPATELLAR_BURSA","如何抽吸或注射髌前滑囊","Disease"],["DIS_HOW_TO_INJECT_A_TROCHANTERIC_BURSA","如何注射转子滑囊","Disease"],["DIS_IGG4_RELATED_DISEASE","IgG4相关疾病","Disease"],["DIS_ACUTE_INFECTIOUS_ARTHRITIS","急性感染性关节炎","Disease"],["DIS_PROSTHETIC_JOINT_INFECTIOUS_ARTHRITIS","关节假体置换后感染性关节炎","Disease"],["DIS_OSTEOMYELITIS","骨髓炎","Disease"],["DIS_NEUROPATHIC_ARTHROPATHY","神经源性关节病","Disease"],["DIS_RHEUMATOID_ARTHRITIS_RA","类风湿关节炎（RA）","Disease"],["DIS_PSORIATIC_ARTHRITIS","银屑病关节炎","Disease"],["DIS_ANKYLOSING_SPONDYLITIS","强直性脊柱炎","Disease"],["DIS_REACTIVE_ARTHRITIS","反应性关节炎","Disease"],["DIS_OSTEOARTHRITIS_OA","骨关节炎（OA）","Disease"],["DIS_ATLANTOAXIAL_SUBLUXATION","寰枢椎半脱位","Disease"],["DIS_CERVICAL_DISC_HERNIATION","颈椎间盘突出症","Disease"],["DIS_LUMBAR_DISC_HERNIATION","腰椎间盘突出症","Disease"],["DIS_CERVICAL_SPINAL_STENOSIS","颈椎管狭窄","Disease"],["DIS_LUMBOSACRAL_RADICULOPATHY","腰骶神经根病","Disease"],["DIS_LUMBAR_SPINAL_STENOSIS","腰椎管狭窄","Disease"],["DIS_OSTEONECROSIS_ON","骨坏死 （ON）","Disease"],["DIS_OSTEOPOROSIS","骨质疏松症","Disease"],["DIS_PAGET_DISEASE_OF_BONE","骨Paget 病","Disease"],["DIS_PAIN_IN_AND_AROUND_A_SINGLE_JOINT","单关节及关节周围疼痛","Disease"],["DIS_PAIN_IN_MULTIPLE_JOINTS","多关节痛","Disease"],["DIS_CUTANEOUS_VASCULITIS","皮肤血管炎","Disease"],["DIS_GRANULOMATOSIS_WITH_POLYANGIITIS_GPA","肉芽肿性多血管炎（GPA）","Disease"],["DIS_EOSINOPHILIC_GRANULOMATOSIS_WITH_POLYANGIITIS_EGPA","嗜酸性肉芽肿性多血管炎（EGPA）","Disease"],["DIS_GIANT_CELL_ARTERITIS","巨细胞动脉炎","Disease"],["DIS_IMMUNOGLOBULIN_A_ASSOCIATED_VASCULITIS_IGAV","免疫球蛋白A相关性的血管炎（IgAV）","Disease"],["DIS_MICROSCOPIC_POLYANGIITIS_MPA","显微镜下多血管炎（MPA）","Disease"],["DIS_POLYARTERITIS_NODOSA_PAN","结节性多动脉炎（PAN）","Disease"],["DIS_POLYMYALGIA_RHEUMATICA","风湿性多肌痛","Disease"],["DIS_TAKAYASU_ARTERITIS","大动脉炎","Disease"],["DIS_FEMALE_PELVIC_PAIN","女性盆腔痛","Disease"],["DIS_VAGINAL_BLEEDING","阴道出血","Disease"],["DIS_VULVOVAGINAL_PRURITUS_OR_VAGINAL_DISCHARGE","外阴阴道瘙痒或阴道分泌物","Disease"],["DIS_FEMALE_PELVIC_MASS","女性盆腔肿块","Disease"],["DIS_FEMALE_PELVIC_MASS_IN_CHILDREN","儿童女性盆腔肿块","Disease"],["DIS_VAGINAL_BLEEDING_IN_CHILDREN","儿童阴道出血","Disease"],["DIS_VULVOVAGINAL_PRURITUS_OR_VAGINAL_DISCHARGE_IN_CHILDREN","儿童外阴阴道瘙痒或阴道分泌物","Disease"],["DIS_BREAST_MASSES","乳腺肿块（乳房肿块）","Disease"],["DIS_NIPPLE_DISCHARGE","乳头溢液","Disease"],["DIS_MASTALGIA_BREAST_PAIN","乳腺痛","Disease"],["DIS_ENDOMETRIOSIS","子宫内膜异位症","Disease"],["DIS_PERMANENT_CONTRACEPTION","永久避孕","Disease"],["DIS_PROCEDURAL_AND_MEDICAL_ABORTION","手术流产和药物流产","Disease"],["DIS_ORAL_CONTRACEPTIVES","口服避孕药","Disease"],["DIS_INTRAUTERINE_DEVICE_IUDS_IUD","宫内节育器 （IUDs; IUD）","Disease"],["DIS_EMERGENCY_CONTRACEPTION","紧急避孕","Disease"],["DIS_SPERM_DISORDERS","精子异常","Disease"],["DIS_ABNORMAL_CERVICAL_MUCUS","宫颈黏液异常","Disease"],["DIS_DIMINISHED_OVARIAN_RESERVE","卵巢储备功能降低","Disease"],["DIS_OVULATORY_DYSFUNCTION","排卵功能障碍","Disease"],["DIS_TUBAL_DYSFUNCTION_AND_PELVIC_ABNORMALITIES","输卵管功能障碍和盆腔异常","Disease"],["DIS_UNEXPLAINED_INFERTILITY","不明原因的不孕","Disease"],["DIS_RECURRENT_PREGNANCY_LOSS","复发性流产","Disease"],["DIS_MENOPAUSE","绝经","Disease"],["DIS_AMENORRHEA","闭经","Disease"],["DIS_ABNORMAL_UTERINE_BLEEDING","异常子宫出血","Disease"],["DIS_DYSMENORRHEA","痛经","Disease"],["DIS_POLYENDOCRINE_METABOLIC_OVARIAN_SYNDROME_PMOS","多内分泌代谢性卵巢综合征(PMOS)","Disease"],["DIS_PRIMARY_OVARIAN_INSUFFICIENCY","卵巢早衰","Disease"],["DIS_PREMENSTRUAL_SYNDROME_PMS","经前期综合征(PMS)","Disease"],["DIS_PELVIC_VENOUS_DISORDERS","盆腔静脉疾病","Disease"],["DIS_ADNEXAL_TORSION","附件扭转","Disease"],["DIS_BARTHOLIN_GLAND_CYST_AND_BARTHOLIN_GLAND_ABSCESS","前庭大腺囊肿和前庭大腺脓肿","Disease"],["DIS_BENIGN_ADNEXAL_MASSES","良性附件肿块","Disease"],["DIS_CERVICAL_POLYPS","宫颈息肉","Disease"],["DIS_CERVICAL_STENOSIS","宫颈狭窄","Disease"],["DIS_SKENE_GLAND_CYST","斯基恩腺囊肿","Disease"],["DIS_VULVAR_INCLUSION_AND_EPIDERMAL_CYSTS","外阴包涵物和表皮囊肿","Disease"],["DIS_UTERINE_ADENOMYOSIS","子宫腺肌症","Disease"],["DIS_ANTERIOR_AND_POSTERIOR_VAGINAL_WALL_PROLAPSE","前后阴道壁脱垂","Disease"],["DIS_UTERINE_AND_APICAL_PROLAPSE","子宫和顶端脱垂","Disease"],["DIS_FEMALE_ORGASMIC_DISORDER","女性性高潮障碍","Disease"],["DIS_PERSISTENT_GENITAL_AROUSAL_DISORDER","持续性性兴奋症候群","Disease"],["DIS_GENITO_PELVIC_PAIN_PENETRATION_DISORDER","生殖器盆腔疼痛/插入障碍","Disease"],["DIS_SEXUAL_INTEREST_AROUSAL_DISORDER","性兴趣/性唤起障碍","Disease"],["DIS_UTERINE_FIBROIDS","子宫肌瘤","Disease"],["DIS_CERVICAL_LEIOMYOMAS","宫颈平滑肌瘤","Disease"],["DIS_PELVIC_INFLAMMATORY_DISEASE_PID","盆腔炎 (PID)","Disease"],["DIS_BACTERIAL_VAGINOSIS_BV","细菌性阴道病（BV）","Disease"],["DIS_CANDIDAL_VAGINITIS","念珠菌性阴道炎","Disease"],["DIS_DESQUAMATIVE_INFLAMMATORY_VAGINITIS","炎性阴道炎","Disease"],["DIS_CERVICITIS","子宫颈炎","Disease"],["DIS_ANEMIA_IN_PREGNANCY","妊娠贫血","Disease"],["DIS_INFECTIOUS_DISEASE_IN_PREGNANCY","妊娠期感染类疾病","Disease"],["DIS_THROMBOEMBOLIC_DISORDERS_IN_PREGNANCY","妊娠期血栓栓塞性疾病","Disease"],["DIS_URINARY_TRACT_INFECTION_IN_PREGNANCY","妊娠期尿路感染","Disease"],["DIS_MULTIFETAL_GESTATION","多胎妊娠","Disease"],["DIS_LATE_TERM_AND_POSTTERM_PREGNANCY","晚期妊娠和过期妊娠","Disease"],["DIS_PELVIC_PAIN_DURING_EARLY_PREGNANCY","孕早期盆腔疼痛","Disease"],["DIS_VAGINAL_BLEEDING_DURING_EARLY_PREGNANCY","孕早期阴道流血","Disease"],["DIS_NAUSEA_AND_VOMITING_DURING_EARLY_PREGNANCY","孕早期恶心呕吐","Disease"],["DIS_LOWER_EXTREMITY_EDEMA_DURING_LATE_PREGNANCY","孕晚期下肢水肿","Disease"],["DIS_VAGINAL_BLEEDING_DURING_LATE_PREGNANCY","孕晚期阴道流血","Disease"],["DIS_INTRAAMNIOTIC_INFECTION","羊膜腔感染","Disease"],["DIS_PLACENTA_ACCRETA","胎盘植入","Disease"],["DIS_AMNIOTIC_FLUID_EMBOLISM","羊水栓塞","Disease"],["DIS_SHOULDER_DYSTOCIA","肩难产","Disease"],["DIS_UTERINE_INVERSION","子宫内翻","Disease"],["DIS_POSTPARTUM_HEMORRHAGE","产后出血","Disease"],["DIS_UTERINE_RUPTURE","子宫破裂","Disease"],["DIS_FETAL_PRESENTATION_POSITION_AND_LIE_INCLUDING_BREECH_PRESENTATION","胎先露、胎方位和胎产式（包括臀位）","Disease"],["DIS_PLACENTAL_ABRUPTION_ABRUPTIO_PLACENTAE","胎盘早剥 (胎盘剥离)","Disease"],["DIS_CERVICAL_INSUFFICIENCY","宫颈机能不全","Disease"],["DIS_HEMOLYTIC_DISEASE_OF_THE_FETUS_AND_NEONATE","胎儿和新生儿溶血性疾病","Disease"],["DIS_PEMPHIGOID_GESTATIONIS","妊娠类天疱疮","Disease"],["DIS_PLACENTA_PREVIA","前置胎盘","Disease"],["DIS_PREECLAMPSIA_AND_ECLAMPSIA","子痫前期和子痫","Disease"],["DIS_POLYMORPHIC_ERUPTION_OF_PREGNANCY","妊娠期多形疹","Disease"],["DIS_STILLBIRTH","死产","Disease"],["DIS_VASA_PREVIA","前置血管","Disease"],["DIS_PRELABOR_RUPTURE_OF_MEMBRANES_PROM","胎膜早破（PROM）","Disease"],["DIS_PRETERM_LABOR","早产临产","Disease"],["DIS_HYPEREMESIS_GRAVIDARUM","妊娠剧吐","Disease"],["DIS_POLYHYDRAMNIOS","羊水过多","Disease"],["DIS_OLIGOHYDRAMNIOS","羊水过少","Disease"],["DIS_ECTOPIC_PREGNANCY","异位妊娠","Disease"],["DIS_SPONTANEOUS_ABORTION","自然流产","Disease"],["DIS_SEPTIC_ABORTION","流产合并感染","Disease"],["DIS_PROTRACTED_OR_ARRESTED_LABOR","产程延长或产程停滞","Disease"],["DIS_MASTITIS","乳腺炎","Disease"],["DIS_POSTPARTUM_ENDOMETRITIS","产后子宫内膜炎","Disease"],["DIS_POSTPARTUM_PYELONEPHRITIS","产后肾盂肾炎","Disease"],["DIS_POSTPARTUM_DEPRESSION","产后抑郁症","Disease"],["DIS_ASTHMA_IN_PREGNANCY","妊娠期哮喘","Disease"],["DIS_AUTOIMMUNE_DISORDERS_IN_PREGNANCY","妊娠期自身免疫疾病","Disease"],["DIS_DIABETES_MELLITUS_IN_PREGNANCY","妊娠期糖尿病","Disease"],["DIS_HEART_DISEASE_IN_PREGNANCY","妊娠期心脏病","Disease"],["DIS_HEPATIC_DISORDERS_IN_PREGNANCY","妊娠期肝病","Disease"],["DIS_HYPERTENSION_IN_PREGNANCY","妊娠期高血压","Disease"],["DIS_RENAL_INSUFFICIENCY_IN_PREGNANCY","妊娠期肾功能不全","Disease"],["DIS_COVID_19_DURING_PREGNANCY","怀孕期间的 COVID-19","Disease"],["DIS_METABOLIC_DYSFUNCTION_ASSOCIATED_LIVER_DISEASE_MASLD","代谢功能障碍相关性肝病 (MASLD)","Disease"],["DIS_ACUTE_LIVER_FAILURE","急性肝功能衰竭","Disease"],["DIS_SPONTANEOUS_BACTERIAL_PERITONITIS_SBP","自发性细菌性腹膜炎 （SBP）","Disease"],["DIS_LIVER_STRUCTURE_AND_FUNCTION","肝脏的结构和功能","Disease"],["DIS_ASCITES","腹水","Disease"],["DIS_JAUNDICE","黄疸","Disease"],["DIS_PORTAL_HYPERTENSION","门静脉高压","Disease"],["DIS_PORTOSYSTEMIC_ENCEPHALOPATHY","门体分流性脑病","Disease"],["DIS_ALCOHOL_RELATED_LIVER_DISEASE","酒精性肝病","Disease"],["DIS_LIVER_INJURY_CAUSED_BY_DRUGS","药物引起的肝脏损伤","Disease"],["DIS_LIVER_TRANSPLANTATION","肝移植","Disease"],["DIS_PRIMARY_BILIARY_CHOLANGITIS_PBC","原发性胆汁性胆管炎（PBC）","Disease"],["DIS_HEPATIC_FIBROSIS","肝纤维化","Disease"],["DIS_CIRRHOSIS","肝硬化","Disease"],["DIS_IGG4_RELATED_SCLEROSING_CHOLANGITIS","IgG4相关的硬化性胆管炎","Disease"],["DIS_CHOLELITHIASIS","胆石症","Disease"],["DIS_ACALCULOUS_BILIARY_PAIN","无结石性胆绞痛","Disease"],["DIS_CHOLEDOCHOLITHIASIS_AND_CHOLANGITIS","胆管结石和胆管炎","Disease"],["DIS_HIV_RELATED_CHOLANGIOPATHY","HIV相关胆管病","Disease"],["DIS_TUMORS_OF_THE_GALLBLADDER_AND_BILE_DUCTS","胆囊及胆管肿瘤","Disease"],["DIS_ACUTE_CHOLECYSTITIS","急性胆囊炎","Disease"],["DIS_CHRONIC_CHOLECYSTITIS","慢性胆囊炎","Disease"],["DIS_POSTCHOLECYSTECTOMY_SYNDROME","胆囊切除术后综合征","Disease"],["DIS_PRIMARY_SCLEROSING_CHOLANGITIS_PSC","原发性硬化性胆管炎（PSC）","Disease"],["DIS_HEPATITIS_B_ACUTE","急性乙型肝炎","Disease"],["DIS_HEPATITIS_B_CHRONIC","乙型肝炎，慢性","Disease"],["DIS_HEPATITIS_C_ACUTE","急性丙型肝炎","Disease"],["DIS_HEPATITIS_C_CHRONIC","丙型肝炎，慢性","Disease"],["DIS_HEPATIC_GRANULOMAS","肝肉芽肿","Disease"],["DIS_ISCHEMIC_CHOLANGIOPATHY","缺血性胆管疾病","Disease"],["DIS_SINUSOIDAL_OBSTRUCTION_SYNDROME","肝窦阻塞综合征","Disease"],["DIS_ISCHEMIC_HEPATITIS","缺血性肝炎","Disease"],["DIS_CONGESTIVE_HEPATOPATHY","淤血性肝病","Disease"],["DIS_HEPATIC_ARTERY_OCCLUSION","肝动脉阻塞","Disease"],["DIS_BUDD_CHIARI_SYNDROME","布-加综合征","Disease"],["DIS_PORTAL_VEIN_THROMBOSIS","门静脉血栓形成","Disease"],["DIS_ALLERGIC_RHINITIS","过敏性鼻炎","Disease"],["DIS_FOOD_ALLERGY","食物过敏","Disease"],["DIS_ANAPHYLAXIS","全身过敏反应","Disease"],["DIS_ANGIOEDEMA","血管性水肿","Disease"],["DIS_HEREDITARY_AND_ACQUIRED_C1_INHIBITOR_DEFICIENCY_OR_DYSFUNCTION","遗传性和获得性C1抑制剂缺乏或功能障碍","Disease"],["DIS_DRUG_HYPERSENSITIVITY","药物超敏反应","Disease"],["DIS_MASTOCYTOSIS_AND_MAST_CELL_ACTIVATION_SYNDROME","肥大细胞增多症与肥大细胞活化综合征","Disease"],["DIS_SELECTIVE_ANTIBODY_DEFICIENCY_WITH_NORMAL_IMMUNOGLOBULINS_SADNI","正常免疫球蛋白水平的选择性抗体缺陷（SADNI）","Disease"],["DIS_ATAXIA_TELANGIECTASIA","共济失调-毛细血管扩张症","Disease"],["DIS_CHRONIC_GRANULOMATOUS_DISEASE_CGD","慢性肉芽肿病（CGD）","Disease"],["DIS_CHRONIC_MUCOCUTANEOUS_CANDIDIASIS","慢性黏膜皮肤念珠菌病","Disease"],["DIS_COMMON_VARIABLE_IMMUNODEFICIENCY_CVID","常见变异型免疫缺陷（CVID）","Disease"],["DIS_DIGEORGE_SYNDROME","DiGeorge综合征","Disease"],["DIS_HYPER_IGE_SYNDROME","高IgE综合征","Disease"],["DIS_HYPER_IGM_SYNDROME","高IgM综合征","Disease"],["DIS_SELECTIVE_IGA_DEFICIENCY","选择性IgA缺陷","Disease"],["DIS_LEUKOCYTE_ADHESION_DEFICIENCY","白细胞黏附功能缺陷","Disease"],["DIS_SEVERE_COMBINED_IMMUNODEFICIENCY_SCID","严重联合免疫缺陷（SCID）","Disease"],["DIS_WISKOTT_ALDRICH_SYNDROME","Wiskott-Aldrich综合征","Disease"],["DIS_X_LINKED_AGAMMAGLOBULINEMIA","X连锁无丙种球蛋白血症","Disease"],["DIS_X_LINKED_LYMPHOPROLIFERATIVE_SYNDROME","X连锁淋巴增殖综合征","Disease"],["DIS_ZAP_70_DEFICIENCY","ZAP-70缺陷","Disease"],["DIS_MEDICAL_ASSESSMENT_OF_THE_PATIENT_WITH_PSYCHIATRIC_SYMPTOMS","精神症状的医学评估","Disease"],["DIS_BEHAVIORAL_EMERGENCIES","需要急诊处理的行为问题","Disease"],["DIS_GENERALIZED_ANXIETY_DISORDER","广泛性焦虑障碍","Disease"],["DIS_PANIC_ATTACKS_AND_PANIC_DISORDER","惊恐发作和惊恐障碍","Disease"],["DIS_SPECIFIC_PHOBIAS","特定恐惧症","Disease"],["DIS_NONSUICIDAL_SELF_INJURY","非自杀性自伤","Disease"],["DIS_SOCIAL_ANXIETY_DISORDER","社交焦虑障碍","Disease"],["DIS_AGORAPHOBIA","场所恐惧症","Disease"],["DIS_ACUTE_STRESS_DISORDER","急性应激障碍","Disease"],["DIS_POSTTRAUMATIC_STRESS_DISORDER_PTSD","创伤后应激障碍（PTSD）","Disease"],["DIS_ADJUSTMENT_DISORDERS","适应性障碍","Disease"],["DIS_DEPERSONALIZATION_DEREALIZATION_DISORDER","人格解体/现实解体障碍","Disease"],["DIS_DISSOCIATIVE_AMNESIA","分离性遗忘","Disease"],["DIS_DISSOCIATIVE_IDENTITY_DISORDER","分离性身份障碍","Disease"],["DIS_DISSOCIATIVE_SUBTYPE_OF_POSTTRAUMATIC_STRESS_DISORDER","创伤后应激障碍的解离亚型","Disease"],["DIS_ANOREXIA_NERVOSA","神经性厌食症","Disease"],["DIS_BULIMIA_NERVOSA","神经性贪食症","Disease"],["DIS_BINGE_EATING_DISORDER","暴食障碍","Disease"],["DIS_AVOIDANT_RESTRICTIVE_FOOD_INTAKE_DISORDER_ARFID","回避/限制性摄食障碍（ARFID）","Disease"],["DIS_PICA","异食癖","Disease"],["DIS_RUMINATION_DISORDER","反刍障碍","Disease"],["DIS_DEPRESSIVE_DISORDERS","抑郁障碍","Disease"],["DIS_CYCLOTHYMIC_DISORDER","循环型障碍","Disease"],["DIS_BIPOLAR_DISORDERS","双相障碍","Disease"],["DIS_OBSESSIVE_COMPULSIVE_DISORDER_OCD","强迫症（OCD）","Disease"],["DIS_TRICHOTILLOMANIA","拔毛癖","Disease"],["DIS_EXCORIATION_SKIN_PICKING_DISORDER","抓痕（皮肤搔抓）障碍","Disease"],["DIS_BODY_FOCUSED_REPETITIVE_BEHAVIOR_DISORDER","身体为中心的重复行为障碍","Disease"],["DIS_OLFACTORY_REFERENCE_DISORDER","嗅觉相关障碍","Disease"],["DIS_HOARDING_DISORDER","囤积症","Disease"],["DIS_BODY_DYSMORPHIC_DISORDER_BDD","躯体变形障碍","Disease"],["DIS_OPIOID_TOXICITY_AND_WITHDRAWAL","阿片类毒性和戒断反应","Disease"],["DIS_OPIOID_USE_DISORDER","阿片类药物使用障碍","Disease"],["DIS_EXHIBITIONISTIC_DISORDER","露阴障碍","Disease"],["DIS_FETISHISTIC_DISORDER","恋物障碍","Disease"],["DIS_PEDOPHILIC_DISORDER","恋童障碍","Disease"],["DIS_SEXUAL_MASOCHISM_DISORDER","性受虐障碍","Disease"],["DIS_SEXUAL_SADISM_DISORDER","性施虐障碍","Disease"],["DIS_TRANSVESTIC_DISORDER","异装障碍","Disease"],["DIS_VOYEURISTIC_DISORDER","窥阴障碍","Disease"],["DIS_FROTTEURISTIC_DISORDER","摩擦障碍","Disease"],["DIS_PARANOID_PERSONALITY_DISORDER_PPD","偏执型人格障碍（PPD）","Disease"],["DIS_SCHIZOID_PERSONALITY_DISORDER_SCPD","分裂样人格障碍（ScPD）","Disease"],["DIS_SCHIZOTYPAL_PERSONALITY_DISORDER_STPD","分裂型人格障碍（STPD）","Disease"],["DIS_ANTISOCIAL_PERSONALITY_DISORDER_ASPD","反社会型人格障碍（ASPD）","Disease"],["DIS_BORDERLINE_PERSONALITY_DISORDER_BPD","边缘型人格障碍（BPD）","Disease"],["DIS_HISTRIONIC_PERSONALITY_DISORDER_HPD","表演型人格障碍（HPD）","Disease"],["DIS_NARCISSISTIC_PERSONALITY_DISORDER_NPD","自恋型人格障碍（NPD）","Disease"],["DIS_AVOIDANT_PERSONALITY_DISORDER_AVPD","回避型人格障碍（AVPD）","Disease"],["DIS_DEPENDENT_PERSONALITY_DISORDER_DPD","依赖型人格障碍（DPD）","Disease"],["DIS_OBSESSIVE_COMPULSIVE_PERSONALITY_DISORDER_OCPD","强迫型人格障碍 (OCPD)","Disease"],["DIS_SCHIZOAFFECTIVE_DISORDER","分裂情感性障碍","Disease"],["DIS_DELUSIONAL_DISORDER","妄想障碍","Disease"],["DIS_SCHIZOPHRENIA","精神分裂症","Disease"],["DIS_SUBSTANCE_OR_MEDICATION_INDUCED_PSYCHOTIC_DISORDER","物质所致的精神病障碍","Disease"],["DIS_GENDER_INCONGRUENCE_AND_GENDER_DYSPHORIA","性别不一致与性别焦虑","Disease"],["DIS_FUNCTIONAL_NEUROLOGICAL_SYMPTOM_DISORDER","功能性神经症状障碍","Disease"],["DIS_ILLNESS_ANXIETY_DISORDER","疾病焦虑障碍","Disease"],["DIS_FACTITIOUS_DISORDER_IMPOSED_ON_SELF","做作性障碍（自我强加）","Disease"],["DIS_SOMATIC_SYMPTOM_DISORDER","躯体症状障碍","Disease"],["DIS_SUICIDAL_BEHAVIOR","自杀行为","Disease"],["DIS_SUBSTANCE_USE_DISORDERS","物质使用障碍","Disease"],["DIS_HALITOSIS","口臭","Disease"],["DIS_MALOCCLUSION","咬合不正","Disease"],["DIS_STOMATITIS","口炎","Disease"],["DIS_XEROSTOMIA","口干症","Disease"],["DIS_ORAL_GROWTHS","口腔增生","Disease"],["DIS_RECURRENT_APHTHOUS_STOMATITIS","复发性阿弗他性口炎","Disease"],["DIS_TOOTHACHE_AND_INFECTION","牙痛和感染","Disease"],["DIS_CARIES","龋齿","Disease"],["DIS_PULPITIS","牙髓炎","Disease"],["DIS_MEDICATION_RELATED_OSTEONECROSIS_OF_THE_JAW_MRONJ","药物相关性颌骨坏死 (MRONJ)","Disease"],["DIS_FRACTURED_AND_AVULSED_TEETH","牙折和牙脱位","Disease"],["DIS_HOW_TO_DO_AN_EMERGENCY_TOOTH_EXTRACTION","如何进行紧急拔牙","Disease"],["DIS_HOW_TO_DO_AN_INFRAORBITAL_NERVE_BLOCK_INTRAORAL","如何进行经口眶下神经阻滞","Disease"],["DIS_HOW_TO_DRAIN_A_TOOTH_ABSCESS","如何引流牙脓肿","Disease"],["DIS_HOW_TO_REDUCE_A_MANDIBULAR_DISLOCATION","如何复位下颌骨脱位","Disease"],["DIS_HOW_TO_REPLACE_AND_SPLINT_AN_AVULSED_TOOTH","如何将脱位牙再植并进行夹板固定","Disease"],["DIS_HOW_TO_DO_AN_INFERIOR_ALVEOLAR_NERVE_BLOCK","如何进行下牙槽神经阻滞","Disease"],["DIS_HOW_TO_DO_A_MENTAL_NERVE_BLOCK","如何行颏神经阻滞","Disease"],["DIS_HOW_TO_DO_A_SUPRAPERIOSTEAL_INFILTRATION","如何做一个骨膜上浸润","Disease"],["DIS_BURNING_MOUTH_SYNDROME","灼口综合征","Disease"],["DIS_TONGUE_TRAUMA","舌外伤","Disease"],["DIS_GINGIVITIS","牙龈炎","Disease"],["DIS_ACUTE_NECROTIZING_ULCERATIVE_GINGIVITIS_ANUG","急性坏死性溃疡性牙龈炎（ANUG）","Disease"],["DIS_PERIODONTITIS","牙周炎","Disease"],["DIS_INTERNAL_TEMPOROMANDIBULAR_JOINT_TMJ_DERANGEMENT","颞下颌关节(TMJ)内紊乱","Disease"],["DIS_MANDIBULAR_CONDYLAR_HYPERPLASIA","下颌髁突增生","Disease"],["DIS_MANDIBULAR_CONDYLAR_HYPOPLASIA","下颌髁突发育不全","Disease"],["DIS_TEMPOROMANDIBULAR_MYOFASCIAL_PAIN_SYNDROME","颞下颌肌筋膜疼痛综合征","Disease"],["DIS_HISTORY_TAKING_IN_THE_OLDER_ADULT","老年人病史采集","Disease"],["DIS_PHYSICAL_EXAMINATION_OF_THE_OLDER_ADULT","老年人体格检查","Disease"],["DIS_ELDER_ABUSE","虐待老人","Disease"],["DIS_FALLS_IN_OLDER_ADULTS","老年人的跌倒","Disease"],["DIS_GAIT_DISORDERS_IN_OLDER_ADULTS","老年人步态障碍","Disease"],["DIS_ADVERSE_DRUG_REACTIONS","药物不良反应","Disease"],["DIS_DYSURIA","排尿困难","Disease"],["DIS_HEMATOSPERMIA","血性精液","Disease"],["DIS_PRIAPISM","阴茎异常勃起","Disease"],["DIS_PAINLESS_SCROTAL_MASS","无痛性阴囊肿块","Disease"],["DIS_SCROTAL_PAIN","阴囊疼痛","Disease"],["DIS_URINARY_FREQUENCY","尿频","Disease"],["DIS_BENIGN_PROSTATIC_HYPERPLASIA","良性前列腺增生","Disease"],["DIS_PROSTATITIS","前列腺炎","Disease"],["DIS_PROSTATE_ABSCESS","前列腺脓肿","Disease"],["DIS_HOW_TO_DO_PARAPHIMOSIS_REDUCTION_WITHOUT_DORSAL_SLIT","如何在不采用背侧切开的情况下进行嵌顿包茎复位","Disease"],["DIS_HOW_TO_DO_URETHRAL_CATHETERIZATION_IN_A_MALE","男性如何经尿道插管","Disease"],["DIS_HOW_TO_DO_URETHRAL_CATHETERIZATION_IN_A_FEMALE","女性如何导尿","Disease"],["DIS_HOW_TO_REMOVE_A_ZIPPER_FROM_A_PENIS","如何从阴茎上取下拉链","Disease"],["DIS_ERECTILE_DYSFUNCTION","勃起功能障碍","Disease"],["DIS_OBSTRUCTIVE_UROPATHY","梗阻性尿路病","Disease"],["DIS_BALANITIS_POSTHITIS_AND_BALANOPOSTHITIS","龟头炎、包皮炎和龟头包皮炎","Disease"],["DIS_EPIDIDYMITIS","附睾炎","Disease"],["DIS_ORCHITIS","睾丸炎","Disease"],["DIS_PEYRONIE_DISEASE","阴茎纤维性海绵体炎","Disease"],["DIS_TESTICULAR_TORSION","睾丸扭转","Disease"],["DIS_URETHRAL_STRICTURE","尿道狭窄","Disease"],["DIS_URINARY_CALCULI","泌尿系结石","Disease"],["DIS_URINARY_INCONTINENCE_IN_ADULTS","成人尿失禁","Disease"],["DIS_URINARY_RETENTION","尿潴留","Disease"],["DIS_NEUROGENIC_BLADDER","神经源性膀胱","Disease"],["DIS_INTERSTITIAL_CYSTITIS","间质性膀胱炎","Disease"],["DIS_OBESITY","肥胖","Disease"],["DIS_METABOLIC_AND_BARIATRIC_SURGERY","代谢和减肥手术","Disease"],["DIS_METABOLIC_SYNDROME","代谢综合征","Disease"],["DIS_PRIMARY_ADRENAL_INSUFFICIENCY_ADDISON_DISEASE","原发性肾上腺皮质功能减退症（艾迪生病）","Disease"],["DIS_SECONDARY_ADRENAL_INSUFFICIENCY","继发性肾上腺皮质功能减退","Disease"],["DIS_ADRENAL_VIRILISM","肾上腺性男性化","Disease"],["DIS_CUSHING_SYNDROME","Cushing综合征","Disease"],["DIS_PRIMARY_ALDOSTERONISM","原发性醛固酮增多症","Disease"],["DIS_SECONDARY_ALDOSTERONISM","继发性醛固酮增多症","Disease"],["DIS_PHEOCHROMOCYTOMA","嗜铬细胞瘤","Disease"],["DIS_NONFUNCTIONAL_ADRENAL_MASSES","无功能性肾上腺肿瘤","Disease"],["DIS_TYPE_2_DIABETES_MELLITUS","2型糖尿病","Disease"],["DIS_ACUTE_COMPLICATIONS_OF_DIABETES_MELLITUS","糖尿病的急性并发症","Disease"],["DIS_HYPOGLYCEMIA","低血糖","Disease"],["DIS_LONG_TERM_COMPLICATIONS_OF_DIABETES_MELLITUS","糖尿病的长期并发症","Disease"],["DIS_TYPE_1_DIABETES_MELLITUS","1型糖尿病","Disease"],["DIS_DYSLIPIDEMIA","血脂异常","Disease"],["DIS_HYPERPARATHYROIDISM","甲状旁腺功能亢进","Disease"],["DIS_HYPOPARATHYROIDISM","甲状旁腺功能减退","Disease"],["DIS_PARATHYROID_TUMORS","甲状旁腺肿瘤","Disease"],["DIS_GENERALIZED_HYPOPITUITARISM","垂体功能全面减退","Disease"],["DIS_GIGANTISM_AND_ACROMEGALY","巨人症和肢端肥大症","Disease"],["DIS_PROLACTINOMA","催乳素瘤","Disease"],["DIS_IPEX_SYNDROME","IPEX综合征","Disease"],["DIS_POEMS_SYNDROME","POEMS综合征","Disease"],["DIS_POLYGLANDULAR_DEFICIENCY_SYNDROMES","多发性内分泌腺功能减退综合征","Disease"],["DIS_EUTHYROID_SICK_SYNDROME","甲状腺功能正常性病态综合征","Disease"],["DIS_HASHIMOTO_THYROIDITIS","桥本甲状腺炎","Disease"],["DIS_HYPERTHYROIDISM","甲状腺功能亢进","Disease"],["DIS_HYPOTHYROIDISM","甲状腺功能减退","Disease"],["DIS_SILENT_LYMPHOCYTIC_THYROIDITIS","无症状的淋巴细胞性甲状腺炎","Disease"],["DIS_SUBACUTE_THYROIDITIS","亚急性甲状腺炎","Disease"],["DIS_SIMPLE_NONTOXIC_GOITER","单纯性非毒性甲状腺肿","Disease"],["DIS_ANABOLIC_ANDROGENIC_STEROIDS","合成雄激素类固醇","Disease"],["DIS_MALE_HYPOGONADISM","男性性腺功能不全","Disease"],["DIS_GYNECOMASTIA","男子乳腺发育","Disease"],["DIS_PRURITUS","瘙痒症","Disease"],["DIS_URTICARIA","荨麻疹","Disease"],["DIS_ACNE_VULGARIS","寻常型痤疮","Disease"],["DIS_PERIORAL_DERMATITIS","口周皮炎","Disease"],["DIS_ROSACEA","玫瑰痤疮，酒渣鼻","Disease"],["DIS_HIDRADENITIS_SUPPURATIVA","化脓性汗腺炎","Disease"],["DIS_CHERRY_ANGIOMAS","樱桃状血管瘤","Disease"],["DIS_ATYPICAL_NEVI_MOLES","非典型痣","Disease"],["DIS_INFANTILE_HEMANGIOMAS","婴幼儿血管瘤","Disease"],["DIS_CAPILLARY_MALFORMATIONS","毛细血管畸形","Disease"],["DIS_NEVUS_ARANEUS","蜘蛛痣","Disease"],["DIS_PYOGENIC_GRANULOMAS","化脓性肉芽肿","Disease"],["DIS_LYMPHATIC_MALFORMATIONS","淋巴管畸形","Disease"],["DIS_DERMATOFIBROMAS","皮肤纤维瘤","Disease"],["DIS_CUTANEOUS_CYSTS","皮肤囊肿","Disease"],["DIS_KELOIDS","瘢痕疙瘩","Disease"],["DIS_LIPOMAS","脂肪瘤","Disease"],["DIS_NEVI_MOLES","痣（痦子）","Disease"],["DIS_SEBORRHEIC_KERATOSES","脂溢性角化病","Disease"],["DIS_SKIN_TAGS","皮赘","Disease"],["DIS_MUCOUS_MEMBRANE_PEMPHIGOID","粘膜类天疱疮","Disease"],["DIS_PEMPHIGUS_FOLIACEUS","落叶型天疱疮","Disease"],["DIS_EPIDERMOLYSIS_BULLOSA","大疱性表皮松解症","Disease"],["DIS_BULLOUS_PEMPHIGOID","大疱性类天疱疮","Disease"],["DIS_DERMATITIS_HERPETIFORMIS","疱疹样皮炎","Disease"],["DIS_EPIDERMOLYSIS_BULLOSA_ACQUISITA","获得性大疱性表皮松解症","Disease"],["DIS_LINEAR_IMMUNOGLOBULIN_A_IGA_DISEASE","线性免疫球蛋白A (IgA)病","Disease"],["DIS_PEMPHIGUS_VULGARIS","寻常型天疱疮","Disease"],["DIS_PALMOPLANTAR_KERATODERMAS","掌跖角化病","Disease"],["DIS_KERATOSIS_PILARIS","毛周角化症","Disease"],["DIS_XERODERMA","干皮病","Disease"],["DIS_CALLUSES_AND_CORNS","胼胝和鸡眼","Disease"],["DIS_ICHTHYOSIS","鱼鳞病","Disease"],["DIS_ERYTHRODERMA","红皮病","Disease"],["DIS_ATOPIC_DERMATITIS_ECZEMA","特应性皮炎（湿疹）","Disease"],["DIS_CONTACT_DERMATITIS","接触性皮炎","Disease"],["DIS_HAND_AND_FOOT_DERMATITIS","手足皮炎","Disease"],["DIS_LICHEN_SIMPLEX_CHRONICUS","慢性单纯性苔癣","Disease"],["DIS_NUMMULAR_DERMATITIS","钱币状皮炎","Disease"],["DIS_SEBORRHEIC_DERMATITIS","脂溢性皮炎","Disease"],["DIS_STASIS_DERMATITIS","淤积性皮炎","Disease"],["DIS_TINEA_BARBAE_BARBER_S_ITCH","须癣（理发师痒）","Disease"],["DIS_TINEA_CAPITIS_SCALP_RINGWORM","头癣 (头皮癣)","Disease"],["DIS_TINEA_CORPORIS_BODY_RINGWORM","体癣（金钱癣）","Disease"],["DIS_TINEA_CRURIS_JOCK_ITCH","股癣（护裆痒）","Disease"],["DIS_TINEA_PEDIS_ATHLETE_S_FOOT","足癣（脚癣）","Disease"],["DIS_DERMATOPHYTID_REACTION","癣菌疹反应","Disease"],["DIS_CANDIDIASIS_MUCOCUTANEOUS","念珠菌病（皮肤黏膜）","Disease"],["DIS_INTERTRIGO","间擦疹","Disease"],["DIS_TINEA_VERSICOLOR","花斑癣","Disease"],["DIS_ALOPECIA_AREATA","斑秃","Disease"],["DIS_ALOPECIA","脱发","Disease"],["DIS_HIRSUTISM_AND_HYPERTRICHOSIS","女性多毛症和遗传性多毛症","Disease"],["DIS_PSEUDOFOLLICULITIS_BARBAE","须部假性毛囊炎","Disease"],["DIS_ACUTE_FEBRILE_NEUTROPHILIC_DERMATOSIS","急性发热性嗜中性皮病","Disease"],["DIS_DRUG_ERUPTIONS_AND_REACTIONS","药疹和药物反应","Disease"],["DIS_ERYTHEMA_MULTIFORME","多形红斑","Disease"],["DIS_PANNICULITIS","脂膜炎","Disease"],["DIS_ERYTHEMA_NODOSUM","结节性红斑","Disease"],["DIS_GRANULOMA_ANNULARE","环状肉芽肿","Disease"],["DIS_PYODERMA_GANGRENOSUM","坏疽性脓皮病","Disease"],["DIS_STEVENS_JOHNSON_SYNDROME_SJS_AND_TOXIC_EPIDERMAL_NECROLYSIS_TEN","Stevens-Johnson综合征（SJS）和中毒性表皮坏死松解症（TEN）","Disease"],["DIS_RETRONYCHIA","逆生甲","Disease"],["DIS_CHRONIC_PARONYCHIA","慢性甲沟炎","Disease"],["DIS_ONYCHOMYCOSIS","甲真菌病","Disease"],["DIS_ACUTE_PARONYCHIA","急性甲沟炎","Disease"],["DIS_INGROWN_TOENAIL","趾甲内生","Disease"],["DIS_BEDBUGS","臭虫","Disease"],["DIS_CUTANEOUS_LARVA_MIGRANS","皮肤游走性幼虫病","Disease"],["DIS_DELUSIONAL_PARASITOSIS","寄生虫妄想","Disease"],["DIS_SCABIES","疥疮","Disease"],["DIS_ALBINISM","白化病","Disease"],["DIS_VITILIGO","白癜风","Disease"],["DIS_HYPERPIGMENTATION","色素沉着过度","Disease"],["DIS_PRESSURE_INJURIES","压力性损伤","Disease"],["DIS_LICHEN_PLANUS","扁平苔藓","Disease"],["DIS_LICHEN_SCLEROSUS","硬化性苔藓","Disease"],["DIS_PITYRIASIS_LICHENOIDES","苔藓样糠疹","Disease"],["DIS_PSORIASIS","银屑病","Disease"],["DIS_PARAPSORIASIS","副银屑病","Disease"],["DIS_PITYRIASIS_ROSEA","玫瑰糠疹","Disease"],["DIS_PITYRIASIS_RUBRA_PILARIS","毛发红糠疹","Disease"],["DIS_ACTINIC_KERATOSES","日光性角化病","Disease"],["DIS_CHRONIC_EFFECTS_OF_SUNLIGHT","日光的慢性效应","Disease"],["DIS_SUNBURN","晒伤","Disease"],["DIS_BROMHIDROSIS","臭汗症","Disease"],["DIS_HYPERHIDROSIS","多汗症","Disease"],["DIS_HYPOHIDROSIS","少汗症","Disease"],["DIS_MOLLUSCUM_CONTAGIOSUM","传染性软疣","Disease"],["DIS_MEMORY_LOSS","记忆下降","Disease"],["DIS_MUSCLE_CRAMPS","肌肉痉挛","Disease"],["DIS_NUMBNESS","麻木","Disease"],["DIS_WEAKNESS","无力","Disease"],["DIS_AUTONOMIC_NEUROPATHIES","自主神经病","Disease"],["DIS_HORNER_SYNDROME","Horner综合征","Disease"],["DIS_MULTIPLE_SYSTEM_ATROPHY","多系统萎缩","Disease"],["DIS_PURE_AUTONOMIC_FAILURE","纯自主神经衰竭","Disease"],["DIS_BRAIN_ABSCESS","脑脓肿","Disease"],["DIS_ENCEPHALITIS","脑炎","Disease"],["DIS_PROGRESSIVE_MULTIFOCAL_LEUKOENCEPHALOPATHY_PML","进行性多灶性白质脑病 (PML)","Disease"],["DIS_INTRACRANIAL_EPIDURAL_ABSCESS_AND_SUBDURAL_EMPYEMA","颅内硬膜外脓肿和硬膜下积脓","Disease"],["DIS_VEGETATIVE_STATE_AND_MINIMALLY_CONSCIOUS_STATE","植物状态和最低意识状态","Disease"],["DIS_LOCKED_IN_SYNDROME","闭锁综合征","Disease"],["DIS_BRAIN_DEATH","脑死亡","Disease"],["DIS_BRAIN_HERNIATION","脑疝","Disease"],["DIS_CRANIOCERVICAL_JUNCTION_ABNORMALITIES","颅颈交界异常","Disease"],["DIS_DELIRIUM","谵妄","Disease"],["DIS_DEMENTIA","痴呆","Disease"],["DIS_BEHAVIORAL_AND_PSYCHOLOGIC_SYMPTOMS_OF_DEMENTIA","痴呆的行为和心理症状","Disease"],["DIS_CHRONIC_TRAUMATIC_ENCEPHALOPATHY_CTE","慢性创伤性脑病（CTE）","Disease"],["DIS_ALZHEIMER_DISEASE","阿尔茨海默病","Disease"],["DIS_VASCULAR_COGNITIVE_IMPAIRMENT_AND_DEMENTIA","血管性认知障碍与痴呆","Disease"],["DIS_DEMENTIA_WITH_LEWY_BODIES_AND_PARKINSON_DISEASE_DEMENTIA","路易体痴呆和帕金森病痴呆","Disease"],["DIS_FRONTOTEMPORAL_DEMENTIA_FTD","额颞叶痴呆（FTD）","Disease"],["DIS_NORMAL_PRESSURE_HYDROCEPHALUS","正常压力脑积水","Disease"],["DIS_MULTIPLE_SCLEROSIS_MS","多发性硬化(MS)","Disease"],["DIS_NEUROMYELITIS_OPTICA_SPECTRUM_DISORDER_NMOSD","视神经脊髓炎谱系疾病（NMOSD）","Disease"],["DIS_AGNOSIA","失认","Disease"],["DIS_AMNESIAS","遗忘","Disease"],["DIS_APHASIA","失语","Disease"],["DIS_APRAXIA","失用","Disease"],["DIS_COVID_RELATED_NEUROPSYCHIATRIC_MANIFESTATIONS","COVID相关神经精神症状","Disease"],["DIS_TRANSIENT_GLOBAL_AMNESIA","短暂性全面遗忘","Disease"],["DIS_CLUSTER_HEADACHE","丛集性头痛","Disease"],["DIS_IDIOPATHIC_INTRACRANIAL_HYPERTENSION","特发性颅内压增高","Disease"],["DIS_MIGRAINE","偏头痛","Disease"],["DIS_POSTLUMBAR_PUNCTURE_AND_OTHER_LOW_PRESSURE_HEADACHES","腰穿后和其他低颅压性头痛","Disease"],["DIS_TENSION_TYPE_HEADACHE","紧张型头痛","Disease"],["DIS_SHORT_LASTING_UNILATERAL_NEURALGIFORM_HEADACHE_WITH_CONJUNCTIVAL_INJECTION_AND_TEARING_SUNCT","持续短暂单侧神经痛样头痛发作伴结膜充血和流泪综合征(SUNCT)","Disease"],["DIS_MEDICATION_OVERUSE_HEADACHE","药物滥用性头痛","Disease"],["DIS_HOW_TO_DO_LUMBAR_PUNCTURE","腰椎穿刺操作方法","Disease"],["DIS_ACUTE_BACTERIAL_MENINGITIS","急性细菌性脑膜炎","Disease"],["DIS_VIRAL_MENINGITIS","病毒性脑膜炎","Disease"],["DIS_SUBACUTE_AND_CHRONIC_MENINGITIS","亚急性和慢性脑膜炎","Disease"],["DIS_FRAGILE_X_ASSOCIATED_TREMOR_ATAXIA_SYNDROME_FXTAS","脆性X染色体相关震颤/共济失调综合征(FXTAS)","Disease"],["DIS_HUNTINGTON_DISEASE","亨廷顿舞蹈病","Disease"],["DIS_MYOCLONUS","肌阵挛","Disease"],["DIS_PARKINSON_DISEASE","帕金森病","Disease"],["DIS_PROGRESSIVE_SUPRANUCLEAR_PALSY_PSP","进行性核上性麻痹（PSP）","Disease"],["DIS_TREMOR","震颤","Disease"],["DIS_CEREBELLAR_DISORDERS","小脑疾病","Disease"],["DIS_DYSTONIAS","肌张力障碍","Disease"],["DIS_CERVICAL_DYSTONIA","颈部肌张力障碍","Disease"],["DIS_SECONDARY_AND_ATYPICAL_PARKINSONISM","继发性和非典型帕金森综合征","Disease"],["DIS_CONJUGATE_GAZE_PALSIES","同向凝视麻痹","Disease"],["DIS_INTERNUCLEAR_OPHTHALMOPLEGIA","核间性眼肌麻痹","Disease"],["DIS_THIRD_CRANIAL_NERVE_OCULOMOTOR_DISORDERS","第三颅神经（动眼神经）疾病","Disease"],["DIS_FOURTH_CRANIAL_NERVE_TROCHLEAR_PALSY","第四颅神经（滑车神经）麻痹","Disease"],["DIS_SIXTH_CRANIAL_NERVE_ABDUCENS_PALSY","第六颅神经（外展神经）麻痹","Disease"],["DIS_TRIGEMINAL_NEURALGIA","三叉神经痛","Disease"],["DIS_FACIAL_NERVE_PALSY","面神经麻痹","Disease"],["DIS_GLOSSOPHARYNGEAL_NEURALGIA","舌咽神经痛","Disease"],["DIS_CHRONIC_WIDESPREAD_CENTRALIZED_PAIN","慢性广泛性（中枢敏化性）疼痛","Disease"],["DIS_NEUROPATHIC_PAIN","神经性疼痛","Disease"],["DIS_COMPLEX_REGIONAL_PAIN_SYNDROME_CRPS","复杂区域疼痛综合征（CRPS）","Disease"],["DIS_HEREDITARY_NEUROPATHIES","遗传性周围神经病","Disease"],["DIS_AMYOTROPHIC_LATERAL_SCLEROSIS_ALS_AND_OTHER_MOTOR_NEURON_DISEASES_MNDS","肌萎缩侧索硬化症和其他运动神经元病","Disease"],["DIS_MYASTHENIA_GRAVIS","重症肌无力","Disease"],["DIS_NERVE_ROOT_DISORDERS","神经根疾病","Disease"],["DIS_BRACHIAL_PLEXUS_AND_LUMBOSACRAL_PLEXUS_DISORDERS","臂丛和腰骶丛疾病","Disease"],["DIS_SPINAL_MUSCULAR_ATROPHIES_SMAS","脊肌萎缩症（SMAs）","Disease"],["DIS_THORACIC_OUTLET_COMPRESSION_SYNDROMES_TOS","胸廓出口受压综合征(TOS)","Disease"],["DIS_ISAACS_SYNDROME","Isaacs综合征","Disease"],["DIS_STIFF_PERSON_SYNDROME","僵人综合征","Disease"],["DIS_MONONEUROPATHIES","单神经病","Disease"],["DIS_POLYNEUROPATHY","多发性神经病","Disease"],["DIS_HEREDITARY_MOTOR_NEUROPATHY_WITH_LIABILITY_TO_PRESSURE_PALSIES_HNPP","遗传性压力敏感性周围神经病（HNPP）","Disease"],["DIS_CHRONIC_INFLAMMATORY_DEMYELINATING_POLYNEUROPATHY_CIDP","慢性炎性脱髓鞘性多发性神经病（CIDP）","Disease"],["DIS_CREUTZFELDT_JAKOB_DISEASE_CJD","克雅病(CJD)","Disease"],["DIS_SEIZURE_DISORDERS","癫痫","Disease"],["DIS_NARCOLEPSY","发作性睡病","Disease"],["DIS_PERIODIC_LIMB_MOVEMENT_DISORDER_PLMD_AND_RESTLESS_LEGS_SYNDROME_RLS","周期性肢体活动障碍（PLMD）和不宁腿综合征(RLS)","Disease"],["DIS_IDIOPATHIC_HYPERSOMNIA","特发性睡眠增多","Disease"],["DIS_SNORING","打鼾","Disease"],["DIS_ACUTE_TRANSVERSE_MYELITIS","急性横贯性脊髓炎","Disease"],["DIS_SPINAL_CORD_ARTERIOVENOUS_MALFORMATIONS_AVMS","脊髓动静脉畸形(AVMs)","Disease"],["DIS_CERVICAL_SPONDYLOSIS_AND_SPONDYLOTIC_CERVICAL_MYELOPATHY","颈椎病及其相关脊髓病变","Disease"],["DIS_HEREDITARY_SPASTIC_PARAPLEGIA","遗传性痉挛性截瘫","Disease"],["DIS_SPINAL_CORD_INFARCTION","脊髓梗死","Disease"],["DIS_SPINAL_CORD_COMPRESSION","脊髓压迫症","Disease"],["DIS_SPINAL_EPIDURAL_ABSCESS","硬膜外脓肿","Disease"],["DIS_SPINAL_SUBDURAL_OR_EPIDURAL_HEMATOMA","脊髓硬膜下或硬膜外血肿","Disease"],["DIS_SYRINX_OF_THE_SPINAL_CORD_OR_BRAIN_STEM","脊髓或脑干的空洞","Disease"],["DIS_HTLV_1_ASSOCIATED_MYELOPATHY_TROPICAL_SPASTIC_PARAPARESIS_HAM_TSP","HTLV-1 – 相关性脊髓病/热带痉挛性截瘫 (HAM/TSP)","Disease"],["DIS_CAUDA_EQUINA_SYNDROME","马尾综合征","Disease"],["DIS_SPINAL_CORD_AUTONOMIC_DYSREFLEXIA","脊髓自主神经反射异常","Disease"],["DIS_ISCHEMIC_STROKE","缺血性脑卒中","Disease"],["DIS_INTRACEREBRAL_HEMORRHAGE","脑出血","Disease"],["DIS_SUBARACHNOID_HEMORRHAGE","蛛网膜下腔出血","Disease"],["DIS_BRAIN_ANEURYSMS","脑动脉瘤","Disease"],["DIS_CEREBRAL_ARTERIOVENOUS_MALFORMATIONS_AVMS","脑动静脉畸形（AVMs）","Disease"],["DIS_TRANSIENT_ISCHEMIC_ATTACK","短暂性脑缺血发作","Disease"],["DIS_HEMATURIA","血尿","Disease"],["DIS_POLYURIA","多尿","Disease"],["DIS_PROTEINURIA","蛋白尿","Disease"],["DIS_ALPORT_SYNDROME","Alport综合征","Disease"],["DIS_IMMUNOGLOBULIN_A_NEPHROPATHY","免疫球蛋白A肾病","Disease"],["DIS_POSTINFECTIOUS_GLOMERULONEPHRITIS_PIGN","感染后肾小球肾炎（PIGN）","Disease"],["DIS_RAPIDLY_PROGRESSIVE_GLOMERULONEPHRITIS_RPGN","急进性肾小球肾炎(RPGN)","Disease"],["DIS_THIN_BASEMENT_MEMBRANE_DISEASE","薄基底膜肾病","Disease"],["DIS_DIABETIC_NEPHROPATHY","糖尿病肾病","Disease"],["DIS_FOCAL_SEGMENTAL_GLOMERULOSCLEROSIS","局灶节段性肾小球硬化","Disease"],["DIS_HIV_ASSOCIATED_NEPHROPATHY","HIV相关肾病","Disease"],["DIS_MEMBRANOUS_NEPHROPATHY","膜性肾病","Disease"],["DIS_MINIMAL_CHANGE_DISEASE","微小病变肾病","Disease"],["DIS_FIBRILLARY_AND_IMMUNOTACTOID_GLOMERULOPATHIES","纤维性肾小球病和免疫触须样肾小球病","Disease"],["DIS_MEMBRANOPROLIFERATIVE_GLOMERULONEPHRITIS","膜增生性肾小球肾炎","Disease"],["DIS_LUPUS_NEPHRITIS","狼疮性肾炎","Disease"],["DIS_HEMODIALYSIS","血液透析","Disease"],["DIS_PERITONEAL_DIALYSIS","腹膜透析","Disease"],["DIS_KIDNEY_TRANSPLANTATION","肾移植","Disease"],["DIS_ACUTE_KIDNEY_INJURY_AKI","急性肾损伤（AKI）","Disease"],["DIS_RHABDOMYOLYSIS","横纹肌溶解","Disease"],["DIS_CHRONIC_KIDNEY_DISEASE","慢性肾脏病","Disease"],["DIS_MEDULLARY_SPONGE_KIDNEY","髓质海绵肾","Disease"],["DIS_NEPHRONOPHTHISIS_AND_AUTOSOMAL_DOMINANT_TUBULOINTERSTITIAL_KIDNEY_DISEASE_ADTKD","肾痨和常染色体显性小管间质肾脏病（ADTKD）","Disease"],["DIS_AUTOSOMAL_DOMINANT_POLYCYSTIC_KIDNEY_DISEASE_ADPKD","常染色体显性遗传多囊肾病 (ADPKD)","Disease"],["DIS_FANCONI_SYNDROME","范可尼综合征","Disease"],["DIS_LIDDLE_SYNDROME","Liddle综合征","Disease"],["DIS_RENAL_GLUCOSURIA","肾性糖尿","Disease"],["DIS_RENAL_TUBULAR_ACIDOSIS","肾小管性酸中毒","Disease"],["DIS_PSEUDOHYPOALDOSTERONISM_TYPE_I","假性低醛固酮血症I型","Disease"],["DIS_HYPERTENSIVE_ARTERIOLAR_NEPHROSCLEROSIS","高血压性小动脉性肾硬化","Disease"],["DIS_RENAL_ARTERY_STENOSIS_AND_OCCLUSION","肾动脉狭窄和闭塞","Disease"],["DIS_RENAL_ATHEROEMBOLISM","肾动脉硬化性栓塞","Disease"],["DIS_RENAL_CORTICAL_NECROSIS","肾皮质坏死","Disease"],["DIS_RENAL_VEIN_THROMBOSIS","肾静脉血栓形成","Disease"],["DIS_ACUTE_TUBULAR_NECROSIS_ATN","急性肾小管坏死（ATN）","Disease"],["DIS_TUBULOINTERSTITIAL_NEPHRITIS","小管间质性肾炎","Disease"],["DIS_CONTRAST_NEPHROPATHY","造影剂肾病","Disease"],["DIS_ANALGESIC_NEPHROPATHY","止痛剂滥用性肾病","Disease"],["DIS_VESICOURETERAL_REFLUX_AND_REFLUX_NEPHROPATHY","膀胱输尿管反流和返流性肾病","Disease"],["DIS_MYELOMA_RELATED_KIDNEY_DISEASE","骨髓瘤相关性肾病","Disease"],["DIS_LACTIC_ACIDOSIS","乳酸酸中毒","Disease"],["DIS_ACID_BASE_DISORDERS","酸碱平衡紊乱","Disease"],["DIS_METABOLIC_ACIDOSIS","代谢性酸中毒","Disease"],["DIS_METABOLIC_ALKALOSIS","代谢性碱中毒","Disease"],["DIS_RESPIRATORY_ACIDOSIS","呼吸性酸中毒","Disease"],["DIS_RESPIRATORY_ALKALOSIS","呼吸性碱中毒","Disease"],["DIS_HYPONATREMIA","低钠血症","Disease"],["DIS_HYPERNATREMIA","高钠血症","Disease"],["DIS_SYNDROME_OF_INAPPROPRIATE_ADH_SECRETION_SIADH","抗利尿激素分泌异常综合征","Disease"],["DIS_HYPOKALEMIA","低钾血症","Disease"],["DIS_HYPERKALEMIA","高钾血症","Disease"],["DIS_HYPOCALCEMIA","低钙血症","Disease"],["DIS_HYPERCALCEMIA","高钙血症","Disease"],["DIS_HYPOPHOSPHATEMIA","低磷血症","Disease"],["DIS_HYPERPHOSPHATEMIA","高磷血症","Disease"],["DIS_HYPOMAGNESEMIA","低镁血症","Disease"],["DIS_HYPERMAGNESEMIA","高镁血症","Disease"],["DIS_VOLUME_DEPLETION","细胞外液容量过低","Disease"],["DIS_VOLUME_OVERLOAD","细胞外液容量过高","Disease"],["DIS_CHRONIC_ABDOMINAL_PAIN_AND_RECURRENT_ABDOMINAL_PAIN","慢性腹痛与复发性腹痛","Disease"],["DIS_DYSPEPSIA","消化不良","Disease"],["DIS_HICCUPS","呃逆","Disease"],["DIS_GLOBUS_SENSATION","癔球症","Disease"],["DIS_NAUSEA_AND_VOMITING","恶心及呕吐","Disease"],["DIS_RUMINATION","反刍","Disease"],["DIS_CONSTIPATION","便秘","Disease"],["DIS_DIARRHEA","腹泻","Disease"],["DIS_GASTROINTESTINAL_RELATED_SYMPTOMS","胃肠道相关症状","Disease"],["DIS_INGUINAL_HERNIA","腹股沟疝","Disease"],["DIS_ACUTE_ABDOMINAL_PAIN","急性腹痛","Disease"],["DIS_ACUTE_MESENTERIC_ISCHEMIA","急性肠系膜缺血","Disease"],["DIS_ACUTE_PERFORATION_OF_THE_GASTROINTESTINAL_TRACT","消化道急性穿孔","Disease"],["DIS_APPENDICITIS","阑尾炎","Disease"],["DIS_HERNIAS_OF_THE_ABDOMINAL_WALL","腹壁疝","Disease"],["DIS_ILEUS","麻痹性肠梗阻","Disease"],["DIS_INTESTINAL_OBSTRUCTION","机械性肠梗阻","Disease"],["DIS_INTRA_ABDOMINAL_ABSCESSES","腹内脓肿","Disease"],["DIS_ISCHEMIC_COLITIS","缺血性结肠炎","Disease"],["DIS_SMALL_BOWEL_TRANSPLANTATION","小肠移植","Disease"],["DIS_SOLITARY_RECTAL_ULCER_SYNDROME","孤立性直肠溃疡综合征","Disease"],["DIS_ANAL_FISSURE","肛裂","Disease"],["DIS_ANORECTAL_ABSCESS","肛门直肠脓肿","Disease"],["DIS_ANORECTAL_FISTULA","肛门直肠瘘","Disease"],["DIS_FECAL_INCONTINENCE","大便失禁","Disease"],["DIS_HEMORRHOIDS","痔疮","Disease"],["DIS_LEVATOR_SYNDROME","肛提肌综合征","Disease"],["DIS_PILONIDAL_DISEASE","藏毛病","Disease"],["DIS_PROCTITIS","直肠炎","Disease"],["DIS_PRURITUS_ANI_ANAL_ITCHING","肛门瘙痒症（肛周瘙痒）","Disease"],["DIS_RECTAL_PROLAPSE_AND_PROCIDENTIA","直肠脱出和脱垂","Disease"],["DIS_ESOPHAGEAL_FOREIGN_BODIES","食管异物","Disease"],["DIS_GASTRIC_AND_INTESTINAL_FOREIGN_BODIES","胃肠道异物","Disease"],["DIS_RECTAL_FOREIGN_BODIES","直肠异物","Disease"],["DIS_BEZOARS","胃石","Disease"],["DIS_MECKEL_DIVERTICULUM","麦克尔憩室","Disease"],["DIS_COLONIC_DIVERTICULOSIS","结肠憩室病","Disease"],["DIS_COLONIC_DIVERTICULITIS","结肠憩室炎","Disease"],["DIS_DIVERTICULAR_DISEASE_OF_THE_STOMACH_AND_SMALL_BOWEL","胃和小肠憩室病","Disease"],["DIS_ACHALASIA","贲门失弛缓症","Disease"],["DIS_EOSINOPHILIC_ESOPHAGITIS","嗜酸细胞性食管炎","Disease"],["DIS_DISTAL_ESOPHAGEAL_SPASM","远端食管痉挛","Disease"],["DIS_DYSPHAGIA","吞咽困难","Disease"],["DIS_ESOPHAGEAL_DIVERTICULA","食管憩室","Disease"],["DIS_GASTROESOPHAGEAL_REFLUX_DISEASE_GERD","胃食管反流性疾病（GERD）","Disease"],["DIS_HIATUS_HIATAL_HERNIA","食管裂孔疝（Hiatal Hernia）","Disease"],["DIS_MALLORY_WEISS_SYNDROME","Mallory-Weiss综合征","Disease"],["DIS_ESOPHAGEAL_RUPTURE","食管破裂","Disease"],["DIS_EROSIVE_GASTRITIS","糜烂性胃炎","Disease"],["DIS_NONEROSIVE_GASTRITIS","非糜烂性胃炎","Disease"],["DIS_AUTOIMMUNE_METAPLASTIC_ATROPHIC_GASTRITIS","自身免疫性化生性萎缩性胃炎","Disease"],["DIS_PEPTIC_ULCER_DISEASE","消化性溃疡","Disease"],["DIS_NOROVIRUS_GASTROENTERITIS","诺如病毒肠胃炎","Disease"],["DIS_ROTAVIRUS_GASTROENTERITIS","轮状病毒肠胃炎","Disease"],["DIS_STAPHYLOCOCCAL_FOOD_POISONING","葡萄球菌性食物中毒","Disease"],["DIS_TRAVELER_S_DIARRHEA","旅行者腹泻","Disease"],["DIS_VARICES","静脉曲张","Disease"],["DIS_VASCULAR_GASTROINTESTINAL_LESIONS","消化道血管性病变","Disease"],["DIS_HOW_TO_DO_ANOSCOPY","如何进行肛门镜检查","Disease"],["DIS_HOW_TO_INSERT_A_NASOGASTRIC_TUBE","如何插入鼻胃管","Disease"],["DIS_HOW_TO_DO_PARACENTESIS","如何实施腹腔穿刺术","Disease"],["DIS_CROHN_DISEASE","克罗恩病","Disease"],["DIS_ULCERATIVE_COLITIS","溃疡性结肠炎","Disease"],["DIS_IRRITABLE_BOWEL_SYNDROME_IBS","肠易激综合征（IBS）","Disease"],["DIS_SMALL_INTESTINAL_BACTERIAL_OVERGROWTH_SIBO","小肠细菌过度生长 (SIBO)","Disease"],["DIS_CARBOHYDRATE_INTOLERANCE","碳水化合物耐受不良","Disease"],["DIS_CELIAC_DISEASE","乳糜泻","Disease"],["DIS_INTESTINAL_LYMPHANGIECTASIA","小肠淋巴管扩张症","Disease"],["DIS_SHORT_BOWEL_SYNDROME","短肠综合征","Disease"],["DIS_TROPICAL_SPRUE","热带口炎性腹泻","Disease"],["DIS_WHIPPLE_DISEASE","Whipple病","Disease"],["DIS_PANCREATIC_ISLET_CELL_TRANSPLANTATION","胰岛细胞移植","Disease"],["DIS_ACUTE_PANCREATITIS","急性胰腺炎","Disease"],["DIS_CHRONIC_PANCREATITIS","慢性胰腺炎","Disease"],["DIS_PANCREAS_TRANSPLANTATION","胰腺移植","Disease"],["DIS_CHEST_PAIN","胸痛","Disease"],["DIS_EDEMA","水肿","Disease"],["DIS_ORTHOSTATIC_HYPOTENSION","直立性低血压","Disease"],["DIS_PALPITATIONS","心悸","Disease"],["DIS_SYNCOPE","晕厥","Disease"],["DIS_LIMB_PAIN","肢体疼痛","Disease"],["DIS_TORSADES_DE_POINTES_VENTRICULAR_TACHYCARDIA","尖端扭转型室速","Disease"],["DIS_SICK_SINUS_SYNDROME","病态窦房结综合征","Disease"],["DIS_ATRIOVENTRICULAR_BLOCK","房室传导阻滞","Disease"],["DIS_ATRIAL_FIBRILLATION","心房颤动","Disease"],["DIS_SYNDROME_OF_INAPPROPRIATE_SINUS_TACHYCARDIA","不适当窦性心动过速综合征","Disease"],["DIS_WOLFF_PARKINSON_WHITE_SYNDROME_WPW_SYNDROME","沃夫-帕金森-怀特综合征（WPW 综合征）","Disease"],["DIS_ATRIAL_FLUTTER","心房扑动","Disease"],["DIS_REENTRANT_PAROXYSMAL_SUPRAVENTRICULAR_TACHYCARDIAS_PSVT","折返性（阵发性）室上性心动过速 (PSVT)","Disease"],["DIS_ATRIAL_FIBRILLATION_AND_WOLFF_PARKINSON_WHITE_SYNDROME_WPW_SYNDROME","心房颤动和WPW综合征（WPW）","Disease"],["DIS_VENTRICULAR_PREMATURE_BEATS_VPB","室性期前收缩（VPB）","Disease"],["DIS_VENTRICULAR_TACHYCARDIA_VT","室性心动过速（VT）","Disease"],["DIS_VENTRICULAR_FIBRILLATION_VF","心室颤动（VF）","Disease"],["DIS_ARRHYTHMOGENIC_RIGHT_VENTRICULAR_CARDIOMYOPATHY_AND_VARIANTS","致心律失常性右心室心肌病及其变异型","Disease"],["DIS_LAMIN_A_C_CARDIOMYOPATHIES_CARDIOLAMINOPATHIES","Lamin A/C 心肌病（心肌层病变）","Disease"],["DIS_NON_COMPACTION_CARDIOMYOPATHY","非紧缩型心肌病","Disease"],["DIS_CARDIAC_SARCOIDOSIS","心脏结节病","Disease"],["DIS_HYPERTROPHIC_CARDIOMYOPATHY_ARRHYTHMIAS","肥厚性心肌病心律失常","Disease"],["DIS_CATECHOLAMINERGIC_POLYMORPHIC_VENTRICULAR_TACHYCARDIA","儿茶酚胺能多形性室性心动过速","Disease"],["DIS_EARLY_REPOLARIZATION_SYNDROME","早期复极综合征","Disease"],["DIS_LONG_QT_INTERVAL_SYNDROMES","长 QT 间期综合征","Disease"],["DIS_SHORT_QT_INTERVAL_SYNDROMES","短 QT 间期综合征","Disease"],["DIS_BRUGADA_SYNDROME","Brugada综合征","Disease"],["DIS_ATHEROSCLEROSIS","动脉粥样硬化","Disease"],["DIS_NONATHEROMATOUS_ARTERIOSCLEROSIS","非粥样硬化性动脉硬化","Disease"],["DIS_DILATED_CARDIOMYOPATHY","扩张性心肌病","Disease"],["DIS_HYPERTROPHIC_CARDIOMYOPATHY","肥厚性心肌病","Disease"],["DIS_RESTRICTIVE_CARDIOMYOPATHY","限制型心肌病","Disease"],["DIS_VASOSPASTIC_ANGINA","血管痉挛性心绞痛","Disease"],["DIS_UNSTABLE_ANGINA","不稳定型心绞痛","Disease"],["DIS_ACUTE_MYOCARDIAL_INFARCTION_MI","急性心肌梗死 (MI)","Disease"],["DIS_PERCUTANEOUS_CORONARY_INTERVENTIONS_PCI","经皮冠状动脉介入治疗（PCI）","Disease"],["DIS_STABLE_ANGINA","心绞痛","Disease"],["DIS_ABDOMINAL_AORTIC_ANEURYSMS_AAA","腹主动脉瘤（AAA）","Disease"],["DIS_THORACIC_AORTIC_ANEURYSMS","胸主动脉瘤","Disease"],["DIS_AORTIC_BRANCH_ANEURYSMS","主动脉分支动脉瘤","Disease"],["DIS_AORTIC_DISSECTION","主动脉夹层","Disease"],["DIS_ABDOMINAL_AORTIC_BRANCH_OCCLUSION","腹主动脉分支阻塞","Disease"],["DIS_INFECTIVE_ENDOCARDITIS","感染性心内膜炎","Disease"],["DIS_NONINFECTIVE_ENDOCARDITIS","非感染性心内膜炎","Disease"],["DIS_CHRONIC_HEART_FAILURE","慢性心力衰竭","Disease"],["DIS_HEART_TRANSPLANTATION","心脏移植","Disease"],["DIS_ACUTE_HEART_FAILURE","急性心力衰竭","Disease"],["DIS_PULMONARY_EDEMA","肺水肿","Disease"],["DIS_RIGHT_HEART_FAILURE_AND_COR_PULMONALE","右心衰竭与肺源性心脏病","Disease"],["DIS_HYPERTENSION","高血压","Disease"],["DIS_RENOVASCULAR_HYPERTENSION","肾血管性高血压","Disease"],["DIS_HYPERTENSIVE_EMERGENCIES","高血压急症","Disease"],["DIS_LYMPHEDEMA","淋巴水肿","Disease"],["DIS_LYMPHADENOPATHY","淋巴结病","Disease"],["DIS_MYOCARDITIS","心肌炎","Disease"],["DIS_PERICARDITIS","心包炎","Disease"],["DIS_ACUTE_LIMB_ISCHEMIA","急性肢体缺血","Disease"],["DIS_FIBROMUSCULAR_DYSPLASIA","纤维肌性发育不良","Disease"],["DIS_PERIPHERAL_ARTERY_ANEURYSMS","周围动脉动脉瘤","Disease"],["DIS_PERIPHERAL_ARTERY_DISEASE","周围动脉疾病","Disease"],["DIS_RAYNAUD_PHENOMENON","雷诺现象","Disease"],["DIS_THROMBOANGIITIS_OBLITERANS","血栓闭塞性脉管炎","Disease"],["DIS_DEEP_VENOUS_THROMBOSIS_DVT_PREVENTION","深静脉血栓形成（DVT）的预防","Disease"],["DIS_DEEP_VENOUS_THROMBOSIS_DVT","（DVT）深静脉血栓形成","Disease"],["DIS_CHRONIC_VENOUS_INSUFFICIENCY_AND_POST_THROMBOTIC_SYNDROME","慢性静脉功能不全和血栓形成后综合征","Disease"],["DIS_SUPERFICIAL_VENOUS_THROMBOSIS","浅表静脉血栓形成","Disease"],["DIS_IDIOPATHIC_TELANGIECTASIAS","特发性毛细血管扩张症","Disease"],["DIS_ARTERIOVENOUS_FISTULA","动静脉瘘","Disease"],["DIS_SCREENING_FOR_SPORTS_PARTICIPATION","运动参与筛查","Disease"],["DIS_SUDDEN_CARDIAC_DEATH_IN_ATHLETES","运动员心脏性猝死","Disease"],["DIS_ATHLETE_S_HEART","运动员心脏","Disease"],["DIS_AORTIC_REGURGITATION","主动脉瓣返流","Disease"],["DIS_AORTIC_STENOSIS","主动脉瓣狭窄","Disease"],["DIS_MITRAL_VALVE_PROLAPSE_MVP","（MVP）二尖瓣脱垂","Disease"],["DIS_MITRAL_REGURGITATION","二尖瓣返流","Disease"],["DIS_MITRAL_STENOSIS","二尖瓣狭窄","Disease"],["DIS_PULMONARY_REGURGITATION","肺动脉瓣反流","Disease"],["DIS_PULMONARY_STENOSIS","肺动脉瓣狭窄","Disease"],["DIS_TRICUSPID_REGURGITATION","三尖瓣反流","Disease"],["DIS_TRICUSPID_STENOSIS","三尖瓣狭窄","Disease"],["DIS_CARDIAC_TUMORS","心脏肿瘤","Disease"],["DIS_AMYLOIDOSIS","淀粉样变性","Disease"],["DIS_PURE_RED_BLOOD_CELL_APLASIA","纯红细胞再生障碍","Disease"],["DIS_IRON_DEFICIENCY_ANEMIA","缺铁性贫血","Disease"],["DIS_SIDEROBLASTIC_ANEMIAS","铁粒幼细胞性贫血","Disease"],["DIS_ANEMIA_OF_CHRONIC_DISEASE","慢性病性贫血","Disease"],["DIS_ANEMIA_OF_RENAL_DISEASE","肾性贫血","Disease"],["DIS_APLASTIC_ANEMIA","再生障碍性贫血","Disease"],["DIS_MYELOPHTHISIC_ANEMIA","骨髓病性贫血","Disease"],["DIS_MEGALOBLASTIC_MACROCYTIC_ANEMIAS","巨幼细胞性贫血","Disease"],["DIS_AUTOIMMUNE_HEMOLYTIC_ANEMIA","自体免疫性溶血性贫血","Disease"],["DIS_PAROXYSMAL_NOCTURNAL_HEMOGLOBINURIA_PNH","阵发性睡眠性血红蛋白尿（PNH）","Disease"],["DIS_HEREDITARY_SPHEROCYTOSIS_AND_HEREDITARY_ELLIPTOCYTOSIS","遗传性球形红细胞增多症和遗传性椭圆形红细胞增多症","Disease"],["DIS_GLYCOLYTIC_PATHWAY_DEFECTS","糖酵解途径缺陷","Disease"],["DIS_GLUCOSE_6_PHOSPHATE_DEHYDROGENASE_G6PD_DEFICIENCY","6-磷酸葡萄糖脱氢酶（G6PD）缺乏","Disease"],["DIS_SICKLE_CELL_DISEASE","镰状细胞病","Disease"],["DIS_THALASSEMIAS","地中海贫血","Disease"],["DIS_HEREDITARY_HEMORRHAGIC_TELANGIECTASIA","遗传性出血性毛细血管扩张症","Disease"],["DIS_DISSEMINATED_INTRAVASCULAR_COAGULATION_DIC","弥散性血管内凝血（DIC）","Disease"],["DIS_HEMOPHILIA","血友病","Disease"],["DIS_COAGULATION_DISORDERS_CAUSED_BY_CIRCULATING_ANTICOAGULANTS","循环抗凝物质引起的凝血功能障碍","Disease"],["DIS_EOSINOPHILIA","嗜酸性粒细胞增多症","Disease"],["DIS_HYPEREOSINOPHILIC_SYNDROME","高嗜酸性粒细胞综合征","Disease"],["DIS_EXCESSIVE_BLEEDING","出血过多","Disease"],["DIS_LANGERHANS_CELL_HISTIOCYTOSIS","朗格汉斯细胞组织细胞增多症","Disease"],["DIS_HEMOPHAGOCYTIC_LYMPHOHISTIOCYTOSIS_HLH","噬血细胞性淋巴组织细胞增多症（HLH）","Disease"],["DIS_HEREDITARY_HEMOCHROMATOSIS","遗传性血色沉积病","Disease"],["DIS_SECONDARY_IRON_OVERLOAD","继发性铁过载","Disease"],["DIS_NEUTROPENIA","中性粒细胞减少","Disease"],["DIS_LYMPHOCYTOPENIA","淋巴细胞减少","Disease"],["DIS_SECONDARY_ERYTHROCYTOSIS","继发性红细胞增多症","Disease"],["DIS_ESSENTIAL_THROMBOCYTHEMIA","原发性血小板增多症","Disease"],["DIS_PRIMARY_MYELOFIBROSIS_PMF","原发性骨髓纤维化（PMF）","Disease"],["DIS_POLYCYTHEMIA_VERA","真性红细胞增多症","Disease"],["DIS_MACROGLOBULINEMIA","巨球蛋白血症","Disease"],["DIS_MULTIPLE_MYELOMA","多发性骨髓瘤","Disease"],["DIS_HYPERSPLENISM","脾功能亢进","Disease"],["DIS_SPLENOMEGALY","脾肿大","Disease"],["DIS_PORPHYRIA_CUTANEA_TARDA","迟发性皮肤卟啉症","Disease"],["DIS_ERYTHROPOIETIC_PROTOPORPHYRIA_AND_X_LINKED_PROTOPORPHYRIA","红细胞生成性原卟啉症及X连锁原卟啉症","Disease"],["DIS_ACUTE_PORPHYRIAS","急性卟啉症","Disease"],["DIS_HEMOLYTIC_UREMIC_SYNDROME_HUS","溶血尿毒综合征（HUS）","Disease"],["DIS_VON_WILLEBRAND_DISEASE","血管性血友病","Disease"],["DIS_IMMUNE_THROMBOCYTOPENIA_ITP","免疫性血小板减少症（ITP）","Disease"],["DIS_THROMBOTIC_THROMBOCYTOPENIC_PURPURA_TTP","血栓性血小板减少性紫癜（TTP）","Disease"],["DIS_ANTIPHOSPHOLIPID_SYNDROME_APS","抗磷脂综合症（APS）","Disease"],["DIS_ANTITHROMBIN_DEFICIENCY","抗凝血酶缺乏","Disease"],["DIS_HYPERHOMOCYSTEINEMIA","高同型半胱氨酸血症","Disease"],["DIS_FACTOR_V_RESISTANCE_TO_ACTIVATED_PROTEIN_C_APC","V因子对活化的蛋白C （APC） 抵抗","Disease"],["DIS_PROTEIN_C_DEFICIENCY","蛋白C缺乏","Disease"],["DIS_PROTEIN_S_DEFICIENCY","蛋白S缺乏","Disease"],["DIS_PROTHROMBIN_FACTOR_II_20210_GENE_MUTATION","凝血酶原（II因子）20210基因突变","Disease"],["DIS_ELEVATED_FACTOR_VIII_IX_AND_XI_LEVELS","因子 VIII、IX 和 XI 水平升高","Disease"],["DIS_ACUTE_VISION_LOSS","急性视力丧失","Disease"],["DIS_ANISOCORIA","瞳孔不等","Disease"],["DIS_BLURRED_VISION","视物模糊","Disease"],["DIS_DIPLOPIA","复视","Disease"],["DIS_EYELID_SWELLING","眼睑肿胀","Disease"],["DIS_EYE_PAIN","眼痛","Disease"],["DIS_PROPTOSIS","眼球突出","Disease"],["DIS_FLOATERS","眼前漂浮物","Disease"],["DIS_RED_EYE","眼红","Disease"],["DIS_TEARING","流泪","Disease"],["DIS_CATARACT","白内障","Disease"],["DIS_BLEPHARITIS","睑缘炎","Disease"],["DIS_CANALICULITIS","泪小管炎","Disease"],["DIS_CHALAZION_AND_HORDEOLUM_STYE","睑板腺囊肿和睑腺炎（针眼）","Disease"],["DIS_DACRYOSTENOSIS","泪管狭窄","Disease"],["DIS_TRACHOMA","沙眼","Disease"],["DIS_VIRAL_CONJUNCTIVITIS","病毒性结膜炎","Disease"],["DIS_ACUTE_BACTERIAL_CONJUNCTIVITIS","急性细菌性结膜炎","Disease"],["DIS_ADULT_INCLUSION_CONJUNCTIVITIS","成人包涵体性结膜炎","Disease"],["DIS_ALLERGIC_CONJUNCTIVITIS","过敏性结膜炎","Disease"],["DIS_OCULAR_MUCOUS_MEMBRANE_PEMPHIGOID","眼黏膜类天疱疮","Disease"],["DIS_EPISCLERITIS","表层巩膜炎","Disease"],["DIS_SCLERITIS","巩膜炎","Disease"],["DIS_COGAN_SYNDROME","Cogan综合征","Disease"],["DIS_BULLOUS_KERATOPATHY","大泡性角膜病变","Disease"],["DIS_CORNEAL_ULCER","角膜溃疡","Disease"],["DIS_HERPES_SIMPLEX_KERATITIS","单纯疱疹病毒性角膜炎","Disease"],["DIS_HERPES_ZOSTER_OPHTHALMICUS","眼部带状疱疹","Disease"],["DIS_INTERSTITIAL_KERATITIS","角膜基质炎","Disease"],["DIS_KERATOCONJUNCTIVITIS_SICCA","角结膜干燥症","Disease"],["DIS_CORNEAL_TRANSPLANTATION","角膜移植","Disease"],["DIS_PRIMARY_OPEN_ANGLE_GLAUCOMA","原发性开角型青光眼","Disease"],["DIS_ANGLE_CLOSURE_GLAUCOMA","闭角型青光眼","Disease"],["DIS_HOW_TO_REMOVE_A_FOREIGN_BODY_FROM_THE_EYE","如何去除眼中的异物","Disease"],["DIS_HOW_TO_IRRIGATE_THE_EYE_AND_DO_EYELID_EVERSION","如何冲洗眼睛和做眼睑外翻","Disease"],["DIS_HOW_TO_DO_LATERAL_CANTHOTOMY","如何行外眦切开术","Disease"],["DIS_COMPRESSIVE_OPTIC_NEUROPATHY","压迫性视神经病变","Disease"],["DIS_HEREDITARY_OPTIC_NEUROPATHIES","遗传性视神经疾病","Disease"],["DIS_ISCHEMIC_OPTIC_NEUROPATHY","缺血性视神经病变","Disease"],["DIS_OPTIC_NEURITIS","视神经炎","Disease"],["DIS_PAPILLEDEMA","视乳头水肿","Disease"],["DIS_TOXIC_AND_NUTRITIONAL_OPTIC_NEUROPATHIES","毒性和营养性视神经病变","Disease"],["DIS_CAVERNOUS_SINUS_THROMBOSIS","海绵窦栓塞","Disease"],["DIS_INFLAMMATORY_ORBITAL_DISEASE","炎症性眼眶疾病","Disease"],["DIS_PRESEPTAL_AND_ORBITAL_CELLULITIS","眶隔前和眼眶蜂窝织炎","Disease"],["DIS_AGE_RELATED_MACULAR_DEGENERATION_AMD_OR_ARMD","年龄相关性黄斑变性 （AMD 或 ARMD）","Disease"],["DIS_CENTRAL_RETINAL_ARTERY_OCCLUSION_AND_BRANCH_RETINAL_ARTERY_OCCLUSION","视网膜中央动脉阻塞和分支动脉阻塞","Disease"],["DIS_CENTRAL_RETINAL_VEIN_OCCLUSION_AND_BRANCH_RETINAL_VEIN_OCCLUSION","视网膜中央静脉阻塞和分支静脉阻塞","Disease"],["DIS_DIABETIC_RETINOPATHY","糖尿病性视网膜病变","Disease"],["DIS_HYPERTENSIVE_RETINOPATHY","高血压性视网膜病变","Disease"],["DIS_RETINAL_DETACHMENT","视网膜脱离","Disease"],["DIS_RETINITIS_PIGMENTOSA","视网膜色素变性","Disease"],["DIS_ENDOPHTHALMITIS","眼内炎","Disease"],["DIS_SYMPATHETIC_OPHTHALMIA","交感性眼炎","Disease"],["DIS_WILSON_DISEASE","威尔逊病","Disease"],["DIS_COPPER_TOXICITY","铜毒性","Disease"],["DIS_COPPER_DEFICIENCY","铜缺乏","Disease"],["DIS_IODINE_DEFICIENCY","碘缺乏症","Disease"],["DIS_ENTERAL_NUTRITION","肠道内营养","Disease"],["DIS_PARENTERAL_NUTRITION_PN","肠外营养（PN）","Disease"],["DIS_PROTEIN_ENERGY_UNDERNUTRITION_PEU","蛋白质－热量营养不良（PEU）","Disease"],["DIS_VITAMIN_A_TOXICITY","维生素A中毒","Disease"],["DIS_VITAMIN_B6_TOXICITY","维生素 B6中毒","Disease"],["DIS_VITAMIN_D_TOXICITY","维生素D中毒","Disease"],["DIS_FOLATE_DEFICIENCY","叶酸缺乏症","Disease"],["DIS_NIACIN_DEFICIENCY","烟酸缺乏症","Disease"],["DIS_RIBOFLAVIN_DEFICIENCY","核黄素缺乏症","Disease"],["DIS_THIAMINE_DEFICIENCY","硫胺缺乏症","Disease"],["DIS_VITAMIN_A_DEFICIENCY","维生素A缺乏症","Disease"],["DIS_VITAMIN_B6_DEFICIENCY_AND_DEPENDENCY","维生素 B6缺乏症及依赖症","Disease"],["DIS_VITAMIN_B12_DEFICIENCY","维生素B12缺乏症","Disease"],["DIS_VITAMIN_C_DEFICIENCY","维生素C缺乏症","Disease"],["DIS_VITAMIN_D_DEFICIENCY_AND_DEPENDENCY","维生素D缺乏症和依赖","Disease"],["DIS_VITAMIN_E_DEFICIENCY","维生素E缺乏症","Disease"],["DIS_VITAMIN_K_DEFICIENCY","维生素K缺乏症","Disease"],["SYS_循环系统","循环系统","System"],["SYS_药理","药理","System"],["SYS_消化系统","消化系统","System"],["SYS_皮肤","皮肤","System"],["SYS_感觉器官","感觉器官","System"],["SYS_内分泌系统","内分泌系统","System"],["SYS_泌尿系统","泌尿系统","System"],["SYS_老年医学","老年医学","System"],["SYS_生殖系统","生殖系统","System"],["SYS_血液系统","血液系统","System"],["SYS_免疫系统","免疫系统","System"],["SYS_运动系统","运动系统","System"],["SYS_神经系统","神经系统","System"],["SYS_营养代谢","营养代谢","System"],["SYS_精神心理","精神心理","System"],["SYS_呼吸系统","呼吸系统","System"],["BR_头部","头部","BodyRegion"],["BR_颈部","颈部","BodyRegion"],["BR_胸部","胸部","BodyRegion"],["BR_腹部","腹部","BodyRegion"],["BR_腰部","腰部","BodyRegion"],["BR_盆腔","盆腔","BodyRegion"],["BR_四肢与脊柱","四肢与脊柱","BodyRegion"],["BR_全身_皮肤","全身（皮肤）","BodyRegion"],["BR_全身","全身","BodyRegion"],["DRG_DICLOFENAC","双氯芬酸","Drug"],["DRG_CELECOXIB","塞来昔布","Drug"],["DRG_INDOMETHACIN","吲哚美辛","Drug"],["DRG_NAPROXEN","萘普生","Drug"],["DRG_TRAMADOL","曲马多","Drug"],["DRG_CODEINE","可待因","Drug"],["DRG_MORPHINE","吗啡","Drug"],["DRG_OXYCODONE","羟考酮","Drug"],["DRG_FENTANYL","芬太尼","Drug"],["DRG_SUMATRIPTAN","舒马曲坦","Drug"],["DRG_ZOLMITRIPTAN","佐米曲普坦","Drug"],["DRG_RIZATRIPTAN","利扎曲普坦","Drug"],["DRG_NARATRIPTAN","那拉曲坦","Drug"],["DRG_ELETRIPTAN","依来曲坦","Drug"],["DRG_FROVATRIPTAN","夫罗曲坦","Drug"],["DRG_LASMIDITAN","拉米地坦","Drug"],["DRG_RIMEGEPANT","利美吉泮","Drug"],["DRG_ERENUMAB","依瑞奈尤单抗","Drug"],["DRG_GALCANEZUMAB","加卡奈珠单抗","Drug"],["DRG_CARBAMAZEPINE","卡马西平","Drug"],["DRG_GABAPENTIN","加巴喷丁","Drug"],["DRG_PREGABALIN","普瑞巴林","Drug"],["DRG_TOPIRAMATE","托吡酯","Drug"],["DRG_LAMOTRIGINE","拉莫三嗪","Drug"],["DRG_PHENYTOIN","苯妥英","Drug"],["DRG_OXCARBAZEPINE","奥卡西平","Drug"],["DRG_SERTRALINE","舍曲林","Drug"],["DRG_PAROXETINE","帕罗西汀","Drug"],["DRG_FLUOXETINE","氟西汀","Drug"],["DRG_ESCITALOPRAM","艾司西酞普兰","Drug"],["DRG_CITALOPRAM","西酞普兰","Drug"],["DRG_VENLAFAXINE","文拉法辛","Drug"],["DRG_DULOXETINE","度洛西汀","Drug"],["DRG_MIRTAZAPINE","米氮平","Drug"],["DRG_AMITRIPTYLINE","阿米替林","Drug"],["DRG_IMIPRAMINE","丙米嗪","Drug"],["DRG_TRAZODONE","曲唑酮","Drug"],["DRG_MELOXICAM","美洛昔康","Drug"],["DRG_VALPROIC_ACID","丙戊酸钠","Drug"],["DRG_LEVETIRACETAM","左乙拉西坦","Drug"],["DRG_LORAZEPAM","劳拉西泮","Drug"],["DRG_DIAZEPAM","地西泮","Drug"],["DRG_ALPRAZOLAM","阿普唑仑","Drug"],["DRG_BUPROPION","安非他酮","Drug"],["DRG_CLONAZEPAM","氯硝西泮","Drug"],["DRG_ZOLPIDEM","唑吡坦","Drug"],["DRG_ESTAZOLAM","艾司唑仑","Drug"],["DRG_OLANZAPINE","奥氮平","Drug"],["DRG_RISPERIDONE","利培酮","Drug"],["DRG_QUETIAPINE","喹硫平","Drug"],["DRG_CHLORPROMAZINE","氯丙嗪","Drug"],["DRG_HALOPERIDOL","氟哌啶醇","Drug"],["DRG_CLOZAPINE","氯氮平","Drug"],["DRG_ARIPIPRAZOLE","阿立哌唑","Drug"],["DRG_OMEPRAZOLE","奥美拉唑","Drug"],["DRG_LITHIUM_CARBONATE","锂盐","Drug"],["DRG_PANTOPRAZOLE","泮托拉唑","Drug"],["DRG_ESOMEPRAZOLE","埃索美拉唑","Drug"],["DRG_FAMOTIDINE","法莫替丁","Drug"],["DRG_RABEPRAZOLE","雷贝拉唑","Drug"],["DRG_PALIPERIDONE","帕利哌酮","Drug"],["DRG_RANITIDINE","雷尼替丁","Drug"],["DRG_LANSOPRAZOLE","兰索拉唑","Drug"],["DRG_SUCRALFATE","硫糖铝","Drug"],["DRG_CIMETIDINE","西咪替丁","Drug"],["DRG_METOCLOPRAMIDE","甲氧氯普胺","Drug"],["DRG_GRANISETRON","格拉司琼","Drug"],["DRG_PROCHLORPERAZINE","丙氯拉嗪","Drug"],["DRG_ONDANSETRON","昂丹司琼","Drug"],["DRG_POLYETHYLENE_GLYCOL","聚乙二醇","Drug"],["DRG_LACTULOSE","乳果糖","Drug"],["DRG_BISACODYL","比沙可啶","Drug"],["DRG_LOPERAMIDE","洛哌丁胺","Drug"],["DRG_AMOXICILLIN","阿莫西林","Drug"],["DRG_MISOPROSTOL","米索前列醇","Drug"],["DRG_METRONIDAZOLE","甲硝唑","Drug"],["DRG_TINIDAZOLE","替硝唑","Drug"],["DRG_CIPROFLOXACIN","环丙沙星","Drug"],["DRG_LEVOFLOXACIN","左氧氟沙星","Drug"],["DRG_APREPITANT","阿瑞匹坦","Drug"],["DRG_CEFUROXIME","头孢呋辛","Drug"],["DRG_MOXIFLOXACIN","莫西沙星","Drug"],["DRG_CLARITHROMYCIN","克拉霉素","Drug"],["DRG_ERYTHROMYCIN","红霉素","Drug"],["DRG_CEFIXIME","头孢克肟","Drug"],["DRG_TETRACYCLINE","四环素","Drug"],["DRG_VANCOMYCIN","万古霉素","Drug"],["DRG_PYRAZINAMIDE","吡嗪酰胺","Drug"],["DRG_ETHAMBUTOL","乙胺丁醇","Drug"],["DRG_CLINDAMYCIN","克林霉素","Drug"],["DRG_ACYCLOVIR","阿昔洛韦","Drug"],["DRG_GANCICLOVIR","更昔洛韦","Drug"],["DRG_VALACYCLOVIR","伐昔洛韦","Drug"],["DRG_KETOCONAZOLE","酮康唑","Drug"],["DRG_TERBINAFINE","特比萘芬","Drug"],["DRG_ITRACONAZOLE","伊曲康唑","Drug"],["DRG_FLUCONAZOLE","氟康唑","Drug"],["DRG_CAPTOPRIL","卡托普利","Drug"],["DRG_BENAZEPRIL","贝那普利","Drug"],["DRG_PERINDOPRIL","培哚普利","Drug"],["DRG_ENALAPRIL","依那普利","Drug"],["DRG_RAMIPRIL","雷米普利","Drug"],["DRG_LISINOPRIL","赖诺普利","Drug"],["DRG_LOSARTAN","氯沙坦","Drug"],["DRG_VORICONAZOLE","伏立康唑","Drug"],["DRG_IRBESARTAN","厄贝沙坦","Drug"],["DRG_VALSARTAN","缬沙坦","Drug"],["DRG_NIFEDIPINE","硝苯地平","Drug"],["DRG_TELMISARTAN","替米沙坦","Drug"],["DRG_FELODIPINE","非洛地平","Drug"],["DRG_CANDESARTAN","坎地沙坦","Drug"],["DRG_OLMESARTAN","奥美沙坦","Drug"],["DRG_AMLODIPINE","氨氯地平","Drug"],["DRG_DILTIAZEM","地尔硫䓬","Drug"],["DRG_METOPROLOL","美托洛尔","Drug"],["DRG_VERAPAMIL","维拉帕米","Drug"],["DRG_PROPRANOLOL","普萘洛尔","Drug"],["DRG_ATENOLOL","阿替洛尔","Drug"],["DRG_LABETALOL","拉贝洛尔","Drug"],["DRG_FUROSEMIDE","呋塞米","Drug"],["DRG_CARVEDILOL","卡维地洛","Drug"],["DRG_HYDROCHLOROTHIAZIDE","氢氯噻嗪","Drug"],["DRG_INDAPAMIDE","吲达帕胺","Drug"],["DRG_TORSEMIDE","托拉塞米","Drug"],["DRG_SPIRONOLACTONE","螺内酯","Drug"],["DRG_ATORVASTATIN","阿托伐他汀","Drug"],["DRG_ROSUVASTATIN","瑞舒伐他汀","Drug"],["DRG_PRAVASTATIN","普伐他汀","Drug"],["DRG_SIMVASTATIN","辛伐他汀","Drug"],["DRG_FENOFIBRATE","非诺贝特","Drug"],["DRG_CLOPIDOGREL","氯吡格雷","Drug"],["DRG_DIPYRIDAMOLE","双嘧达莫","Drug"],["DRG_TICAGRELOR","替格瑞洛","Drug"],["DRG_BISOPROLOL","比索洛尔","Drug"],["DRG_WARFARIN","华法林","Drug"],["DRG_EZETIMIBE","依折麦布","Drug"],["DRG_APIXABAN","阿哌沙班","Drug"],["DRG_HEPARIN","肝素","Drug"],["DRG_METFORMIN","二甲双胍","Drug"],["DRG_RIVAROXABAN","利伐沙班","Drug"],["DRG_GLYBURIDE","格列本脲","Drug"],["DRG_ENOXAPARIN","依诺肝素","Drug"],["DRG_ACARBOSE","阿卡波糖","Drug"],["DRG_GLIMEPIRIDE","格列美脲","Drug"],["DRG_LINAGLIPTIN","利格列汀","Drug"],["DRG_SITAGLIPTIN","西格列汀","Drug"],["DRG_SEMAGLUTIDE","司美格鲁肽","Drug"],["DRG_EMPAGLIFLOZIN","恩格列净","Drug"],["DRG_DAPAGLIFLOZIN","达格列净","Drug"],["DRG_LEVOTHYROXINE","左甲状腺素","Drug"],["DRG_LIRAGLUTIDE","利拉鲁肽","Drug"],["DRG_METHIMAZOLE","甲巯咪唑","Drug"],["DRG_PROPYLTHIOURACIL","丙硫氧嘧啶","Drug"],["DRG_PIOGLITAZONE","吡格列酮","Drug"],["DRG_FORMOTEROL","福莫特罗","Drug"],["DRG_BUDESONIDE","布地奈德","Drug"],["DRG_INSULIN_GLARGINE","胰岛素","Drug"],["DRG_FLUTICASONE","氟替卡松","Drug"],["DRG_ALBUTEROL","沙丁胺醇","Drug"],["DRG_THEOPHYLLINE","茶碱","Drug"],["DRG_MONTELUKAST","孟鲁司特","Drug"],["DRG_TIOTROPIUM","噻托溴铵","Drug"],["DRG_SALMETEROL","沙美特罗","Drug"],["DRG_DEXTROMETHORPHAN","右美沙芬","Drug"],["DRG_ACETYLCYSTEINE","乙酰半胱氨酸","Drug"],["DRG_CETIRIZINE","西替利嗪","Drug"],["DRG_GUAIFENESIN","愈创甘油醚","Drug"],["DRG_LORATADINE","氯雷他定","Drug"],["DRG_DIPHENHYDRAMINE","苯海拉明","Drug"],["DRG_FEXOFENADINE","非索非那定","Drug"],["DRG_CHLORPHENIRAMINE","氯苯那敏","Drug"],["DRG_PREDNISONE","泼尼松","Drug"],["DRG_AMINOPHYLLINE","氨茶碱","Drug"],["DRG_BETAMETHASONE","倍他米松","Drug"],["DRG_DEXAMETHASONE","地塞米松","Drug"],["DRG_HYDROCORTISONE","氢化可的松","Drug"],["DRG_CYCLOPHOSPHAMIDE","环磷酰胺","Drug"],["DRG_METHOTREXATE","甲氨蝶呤","Drug"],["DRG_CYCLOSPORINE","环孢素","Drug"],["DRG_AZATHIOPRINE","硫唑嘌呤","Drug"],["DRG_HYDROXYCHLOROQUINE","羟氯喹","Drug"],["DRG_METHYLPREDNISOLONE","甲泼尼龙","Drug"],["DRG_SULFASALAZINE","柳氮磺吡啶","Drug"],["DRG_LEFLUNOMIDE","来氟米特","Drug"],["DRG_TACROLIMUS","他克莫司","Drug"],["DRG_ALLOPURINOL","别嘌醇","Drug"],["DRG_FEBUXOSTAT","非布司他","Drug"],["DRG_ALENDRONATE","阿仑膦酸钠","Drug"],["DRG_COLCHICINE","秋水仙碱","Drug"],["DRG_ADALIMUMAB","阿达木单抗","Drug"],["DRG_ZOLEDRONIC_ACID","唑来膦酸","Drug"],["DRG_RISEDRONATE","利塞膦酸钠","Drug"],["DRG_FINASTERIDE","非那雄胺","Drug"],["DRG_TAMSULOSIN","坦索罗辛","Drug"],["DRG_SOLIFENACIN","索利那新","Drug"],["DRG_TOLTERODINE","托特罗定","Drug"],["DRG_RALOXIFENE","雷洛昔芬","Drug"],["DRG_SILDENAFIL","西地那非","Drug"],["DRG_LEVODOPA","左旋多巴","Drug"],["DRG_PRAMIPEXOLE","普拉克索","Drug"],["DRG_AMANTADINE","金刚烷胺","Drug"],["DRG_TRIHEXYPHENIDYL","苯海索","Drug"],["DRG_DONEPEZIL","多奈哌齐","Drug"],["DRG_MEMANTINE","美金刚","Drug"],["DRG_ADAPALENE","阿达帕林","Drug"],["DRG_GALANTAMINE","加兰他敏","Drug"],["DRG_TADALAFIL","他达拉非","Drug"],["DRG_BENZOYL_PEROXIDE","过氧苯甲酰","Drug"],["DRG_CALCIPOTRIENE","卡泊三醇","Drug"],["DRG_ISOTRETINOIN","异维A酸","Drug"],["DRG_TRETINOIN","维A酸","Drug"],["DRG_DABIGATRAN","达比加群","Drug"],["DCL_ACEI","ACEI","DrugClass"],["DCL_ACEI类降压药","ACEI类降压药","DrugClass"],["DCL_ARB","ARB","DrugClass"],["DCL_ARB类降压药","ARB类降压药","DrugClass"],["DCL_CGRP拮抗剂","CGRP拮抗剂","DrugClass"],["DCL_CGRP靶向药","CGRP靶向药","DrugClass"],["DCL_H2受体拮抗剂","H2受体拮抗剂","DrugClass"],["DCL_SSRI","SSRI","DrugClass"],["DCL_β受体阻滞剂","β受体阻滞剂","DrugClass"],["DCL_三环类抗抑郁药","三环类抗抑郁药","DrugClass"],["DCL_他汀类","他汀类","DrugClass"],["DCL_促胃肠动力药","促胃肠动力药","DrugClass"],["DCL_免疫抑制剂","免疫抑制剂","DrugClass"],["DCL_免疫抑制剂与生物制剂","免疫抑制剂与生物制剂","DrugClass"],["DCL_其他常用","其他常用","DrugClass"],["DCL_利尿剂","利尿剂","DrugClass"],["DCL_双膦酸盐","双膦酸盐","DrugClass"],["DCL_吸入性糖皮质激素","吸入性糖皮质激素","DrugClass"],["DCL_妇科用药","妇科用药","DrugClass"],["DCL_平喘与慢阻肺用药","平喘与慢阻肺用药","DrugClass"],["DCL_心境稳定剂","心境稳定剂","DrugClass"],["DCL_抗凝药","抗凝药","DrugClass"],["DCL_抗抑郁药","抗抑郁药","DrugClass"],["DCL_抗焦虑与镇静催眠药","抗焦虑与镇静催眠药","DrugClass"],["DCL_抗病毒药","抗病毒药","DrugClass"],["DCL_抗痛风药","抗痛风药","DrugClass"],["DCL_抗癫痫与神经痛药","抗癫痫与神经痛药","DrugClass"],["DCL_抗真菌药","抗真菌药","DrugClass"],["DCL_抗精神病药","抗精神病药","DrugClass"],["DCL_抗组胺药","抗组胺药","DrugClass"],["DCL_抗菌药","抗菌药","DrugClass"],["DCL_抗血小板药","抗血小板药","DrugClass"],["DCL_抗酸与黏膜保护剂","抗酸与黏膜保护剂","DrugClass"],["DCL_支气管扩张剂","支气管扩张剂","DrugClass"],["DCL_曲坦类","曲坦类","DrugClass"],["DCL_止吐药","止吐药","DrugClass"],["DCL_止泻药","止泻药","DrugClass"],["DCL_泌尿科用药","泌尿科用药","DrugClass"],["DCL_泻药","泻药","DrugClass"],["DCL_泻药与止泻药","泻药与止泻药","DrugClass"],["DCL_甲状腺用药","甲状腺用药","DrugClass"],["DCL_白三烯受体拮抗剂","白三烯受体拮抗剂","DrugClass"],["DCL_皮肤科外用药","皮肤科外用药","DrugClass"],["DCL_祛痰止咳药","祛痰止咳药","DrugClass"],["DCL_糖皮质激素","糖皮质激素","DrugClass"],["DCL_胰岛素","胰岛素","DrugClass"],["DCL_苯二氮䓬类","苯二氮䓬类","DrugClass"],["DCL_解热镇痛抗炎药","解热镇痛抗炎药","DrugClass"],["DCL_调脂药","调脂药","DrugClass"],["DCL_质子泵抑制剂","质子泵抑制剂","DrugClass"],["DCL_钙通道阻滞剂","钙通道阻滞剂","DrugClass"],["DCL_阿片类","阿片类","DrugClass"],["DCL_阿片类镇痛药","阿片类镇痛药","DrugClass"],["DCL_降糖药","降糖药","DrugClass"],["DCL_非甾体抗炎药","非甾体抗炎药","DrugClass"],["DCL_骨质疏松用药","骨质疏松用药","DrugClass"],["DRG_803670DF","羟甲唑啉","Drug"],["DRG_E7DC7ABB","异丙托溴铵","Drug"],["DRG_BA028DAD","叶酸","Drug"],["DRG_522C8B2A","维生素D","Drug"],["DRG_DC63F578","硫酸亚铁","Drug"],["DRG_05539A8D","低分子肝素","Drug"],["DRG_C3ABB109","米非司酮","Drug"],["DRG_F78412EE","缩宫素","Drug"],["DRG_50294BEF","噻吗洛尔","Drug"],["DRG_14C0D468","维生素B12","Drug"],["DRG_930826EF","特拉唑嗪","Drug"],["DRG_E1C39D30","多沙唑嗪","Drug"],["DRG_9BC06D1A","炉甘石洗剂","Drug"],["DRG_ADFB343A","维生素C","Drug"],["DRG_1C96B00D","骨化三醇","Drug"],["DRG_B8285530","他克莫司软膏","Drug"],["DRG_C2A9F38F","拉坦前列素","Drug"]],"types":[{"t":"Disease","label":"疾病","color":"#e8590c"},{"t":"Symptom","label":"症状","color":"#f0a500"},{"t":"Drug","label":"药物","color":"#1c7ed6"},{"t":"DrugClass","label":"药物类别","color":"#12b886"},{"t":"Pathogen","label":"病原体","color":"#7048e8"},{"t":"Strain","label":"毒株","color":"#5f3dc4"},{"t":"Vector","label":"传播媒介","color":"#0c8599"},{"t":"Host","label":"宿主","color":"#2b8a3e"},{"t":"Syndrome","label":"综合征","color":"#c2255c"},{"t":"Complication","label":"并发症","color":"#1864ab"},{"t":"Vaccine","label":"疫苗","color":"#087f5b"},{"t":"DiagnosticTest","label":"检测","color":"#3b5bdb"},{"t":"Intervention","label":"防控措施","color":"#868e96"},{"t":"System","label":"解剖系统","color":"#8a94a6"},{"t":"BodyRegion","label":"身体部位","color":"#8a94a6"},{"t":"Region","label":"地区","color":"#adb5bd"},{"t":"Population","label":"人群","color":"#ced4da"},{"t":"Policy","label":"政策法规","color":"#ced4da"},{"t":"DataPoint","label":"监测数据点","color":"#ced4da"}],"meta":{"src":"medical_kg.db","date":"2026-11-07"}};</script>
+<script>
+/* 医疗知识图谱 · 主目录 */
+(() => {
+  'use strict';
+
+  const D = window.__PORTAL__;
+  const $ = s => document.querySelector(s);
+  const svg = document.getElementById('svg');
+  const REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* 人体图坐标系：原图 400×744，放在 660×812 的画布里，中轴 x=330。
+     两侧各留 130px，标签排在留白里，避开垂下的手臂。 */
+  const CX = 330, CY = 38, BW = 400, BH = 744;
+  const EDGE_L = 124, EDGE_R = 536;
+
+  const esc = s => String(s == null ? '' : s)
+    .replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  /** 文本宽度粗估：中日韩字符按 1em，其余按 0.56em —— 只用来定 pill 宽度 */
+  function textWidth(str, fs) {
+    let w = 0;
+    for (const ch of str) w += ch.charCodeAt(0) >= 0x2e80 ? fs : fs * 0.56;
+    return w;
+  }
+
+  const maxCount = Math.max(...D.systems.map(s => s.c));
+  const radius = c => 10 + 9 * Math.sqrt(c / maxCount);
+
+  /* 每个系统一套固定色相：圆点、引线、标签、右侧卡片色条全用它。
+     颜色是最快的索引——没有它，左边 10 个橙点和右边 10 张蓝卡在视觉上是
+     两组无关的清单，用户只能靠读字去对。冷暖分配大致按「体表偏暖、内脏偏冷」。 */
+  const SYS_COLOR = {
+    'SYS_神经系统': '#6f5bd0',
+    'SYS_感觉器官': '#2f9bc6',
+    'SYS_内分泌系统': '#18a08b',
+    'SYS_呼吸系统': '#3f9e57',
+    'SYS_循环系统': '#d64f52',
+    'SYS_消化系统': '#dd8a33',
+    'SYS_泌尿系统': '#3f7ec9',
+    'SYS_生殖系统': '#bf6bb4',
+    'SYS_皮肤': '#c1a13f',
+    'SYS_运动系统': '#78859a',
+  };
+  const SYS_NEUTRAL = '#8b98aa';                 // 覆盖全身的那几类不属于具体部位，统一灰蓝
+  const colOf = id => SYS_COLOR[id] || SYS_NEUTRAL;
+
+  /* ---------------- 人体 ---------------- */
+
+  /* 两层剪影常驻 DOM，切换时只换显隐 —— 标记不用重建，也就不会闪。
+     visibleSex 记录「当前应该是谁」，连续点击时以它为准。 */
+  let visibleSex = null;
+  let sexToken = 0;
+  let DOTS = [];
+
+  function buildStage() {
+    const out = [];
+
+    out.push(
+      '<defs>' +
+        /* 擦除用的遮罩：上段实心，下段一条白色→透明的羽化带，边缘才不生硬 */
+        '<linearGradient id="wipeGrad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/>' +
+        '</linearGradient>' +
+        '<mask id="wipe" maskUnits="userSpaceOnUse" x="0" y="0" width="660" height="812">' +
+          '<rect id="wmSolid" x="0" y="' + CY + '" width="660" height="0" fill="#fff"/>' +
+          '<rect id="wmFade" x="0" y="' + CY + '" width="660" height="0" fill="url(#wipeGrad)"/>' +
+        '</mask>' +
+        /* 扫描线：中间实、两端淡出，跨过身体时不硬切 */
+        '<linearGradient id="scanGrad" gradientUnits="userSpaceOnUse" x1="30" y1="0" x2="630" y2="0">' +
+          '<stop offset="0" stop-color="#ff8a4c" stop-opacity="0"/>' +
+          '<stop offset=".18" stop-color="#ff8a4c" stop-opacity=".5"/>' +
+          '<stop offset=".5" stop-color="#d9480f" stop-opacity="1"/>' +
+          '<stop offset=".82" stop-color="#ff8a4c" stop-opacity=".5"/>' +
+          '<stop offset="1" stop-color="#ff8a4c" stop-opacity="0"/>' +
+        '</linearGradient>' +
+        '<linearGradient id="trailGrad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="76">' +
+          '<stop offset="0" stop-color="#d9480f" stop-opacity="0"/>' +
+          '<stop offset="1" stop-color="#d9480f" stop-opacity=".16"/>' +
+        '</linearGradient>' +
+        /* 光带只在身体轮廓内显形，否则会横向铺成一整条色块、盖住两侧标签 */
+        '<mask id="bodyMask" maskUnits="userSpaceOnUse" x="0" y="0" width="660" height="812" ' +
+          'style="mask-type:alpha">' +
+          `<image id="bodyMaskImg" x="${CX - BW / 2}" y="${CY}" width="${BW}" height="${BH}" ` +
+          `href="${D.body.m}" preserveAspectRatio="xMidYMid meet"/>` +
+        '</mask>' +
+      '</defs>'
+    );
+
+    out.push('<g class="bodies">' + ['m', 'f'].map((sex, i) =>
+      `<image class="bd" data-sex="${sex}" x="${CX - BW / 2}" y="${CY}" width="${BW}" height="${BH}" ` +
+      `href="${D.body[sex]}" preserveAspectRatio="xMidYMid meet" ` +
+      `style="display:${i === 0 ? '' : 'none'}"/>`
+    ).join('') + '</g>');
+
+    // 扫描光带（切换时才显形）
+    out.push(
+      '<g id="scan" style="opacity:0">' +
+        `<rect id="scanTrail" x="0" y="${CY}" width="660" height="0" fill="url(#trailGrad)" mask="url(#bodyMask)"/>` +
+        `<line id="scanLine" x1="30" y1="${CY}" x2="630" y2="${CY}" ` +
+          'stroke="url(#scanGrad)" stroke-width="1.6" stroke-linecap="round"/>' +
+      '</g>'
+    );
+
+    // 器官范围虚线圈：平时透明，悬停某个系统时才浮出
+    for (const s of D.systems) {
+      if (!s.zone || !s.zone.length) continue;
+      out.push(`<g class="zone" data-zone="${s.id}">` + s.zone.map(z =>
+        `<ellipse cx="${CX + z[0]}" cy="${CY + z[1]}" rx="${z[2]}" ry="${z[3]}" ` +
+        `transform="rotate(${z[4]} ${CX + z[0]} ${CY + z[1]})"/>`
+      ).join('') + '</g>');
+    }
+
+    // 标记按纵向位置排一遍，入场时从头顶往脚下依次浮出
+    const ordered = D.systems.slice().sort((a, b) => a.chip - b.chip);
+    const delay = new Map(ordered.map((s, i) => [s.id, i * 52]));
+
+    DOTS = [];
+    for (const s of D.systems) {
+      const mx = CX + s.dx;
+      const my = CY + s.y;
+      const cy = CY + s.chip;
+      const r = radius(s.c);
+
+      const FS = 14.5, PAD = 10, PH = 26;
+      const pillW = textWidth(s.n, FS) + PAD * 2 + 2;
+      const left = s.side === 'l';
+      const edge = left ? EDGE_L : EDGE_R;           // 引线落点
+      const px = left ? edge - pillW : edge;         // pill 左边缘
+
+      // 引线从圆周出发，不压住圆点
+      const dx = edge - mx, dy = cy - my;
+      const len = Math.hypot(dx, dy) || 1;
+      const sx = mx + dx / len * (r + 1.5);
+      const sy = my + dy / len * (r + 1.5);
+
+      // 标签和圆点之间有一段空白（只有一条细引线），点在空白处原来没反应。
+      // 盖一块透明命中区把整组连起来，点哪儿都能进图谱。
+      const hx = Math.min(px, mx - r), hy = Math.min(cy - PH / 2, my - r);
+      const hw = Math.max(px + pillW, mx + r) - hx;
+      const hh = Math.max(cy + PH / 2, my + r) - hy;
+
+      out.push(
+        `<g class="sys" data-id="${s.id}" data-zone="${s.id}" tabindex="0" role="button" ` +
+        `style="--d:${delay.get(s.id)};--c:${colOf(s.id)}" aria-label="${esc(s.n)}，${s.c} 个病种">` +
+          `<rect class="hit" x="${hx.toFixed(1)}" y="${hy.toFixed(1)}" ` +
+            `width="${hw.toFixed(1)}" height="${hh.toFixed(1)}" fill="transparent"/>` +
+          `<title>${esc(s.n)} · ${s.c} 个病种｜${esc(s.tip || '')}（单击打开图谱）</title>` +
+          `<line class="lead" x1="${sx.toFixed(1)}" y1="${sy.toFixed(1)}" x2="${edge}" y2="${cy}"/>` +
+          `<rect class="pill" x="${px.toFixed(1)}" y="${cy - PH / 2}" ` +
+            `width="${pillW.toFixed(1)}" height="${PH}" rx="${PH / 2}"/>` +
+          `<text class="nm" x="${(px + pillW / 2).toFixed(1)}" y="${cy + 5.1}" ` +
+            `font-size="${FS}" text-anchor="middle">${esc(s.n)}</text>` +
+          `<circle class="dot" cx="${mx}" cy="${my}" r="${r.toFixed(1)}"/>` +
+          `<text class="cnt" x="${mx}" y="${my + 4.4}" ` +
+            `font-size="${Math.max(10, Math.round(r * 0.62))}">${s.c}</text>` +
+        `</g>`
+      );
+
+      DOTS.push({ el: null, cy, id: s.id });
+    }
+
+    svg.innerHTML = out.join('');
+
+    // 缓存圆点元素，切换时按扫描进度依次脉冲
+    svg.querySelectorAll('g.sys').forEach(g => {
+      const d = DOTS.find(x => x.id === g.dataset.id);
+      if (d) d.el = g;
+    });
+  }
+
+  /** 男/女切换：上层新剪影被一条下行的扫描线逐段揭开，圆点跟着脉冲 */
+  function setSex(sex, instant) {
+    if (sex === visibleSex) return;
+
+    const inImg = svg.querySelector(`image.bd[data-sex="${sex}"]`);
+    const outImgs = [...svg.querySelectorAll('image.bd')].filter(i => i !== inImg);
+    const token = ++sexToken;
+
+    // 抬到最上层，下层留着做底，才看得见「揭开」的过程
+    svg.querySelector('g.bodies').appendChild(inImg);
+    inImg.style.display = '';
+    outImgs.forEach(i => { i.style.display = ''; });
+
+    if (instant || REDUCE) { finish(); return; }
+
+    inImg.setAttribute('mask', 'url(#wipe)');
+
+    const solid = svg.querySelector('#wmSolid');
+    const fade = svg.querySelector('#wmFade');
+    const grad = svg.querySelector('#wipeGrad');
+    const gScan = svg.querySelector('#scan');
+    const line = svg.querySelector('#scanLine');
+    const trail = svg.querySelector('#scanTrail');
+    const trailGrad = svg.querySelector('#trailGrad');
+
+    // 光带的遮罩跟着新剪影走，男/女轮廓不一样
+    svg.querySelector('#bodyMaskImg').setAttribute('href', D.body[sex]);
+
+    const FEATHER = 36, DUR = 640;
+    const t0 = performance.now();
+    const dots = DOTS.map(d => ({ ...d, fired: false }));
+    const ease = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+
+    gScan.style.opacity = '1';
+
+    function finish() {
+      inImg.removeAttribute('mask');
+      svg.querySelectorAll('image.bd').forEach(i => {
+        i.style.display = i === inImg ? '' : 'none';
+      });
+      svg.querySelector('#scan').style.opacity = '0';
+      visibleSex = sex;
+    }
+
+    function step(now) {
+      if (token !== sexToken) return;      // 被新的一次切换打断
+      const p = Math.min(1, (now - t0) / DUR);
+      const h = ease(p) * BH;
+      const top = CY + h;
+
+      const solidH = Math.max(0, h - Math.min(FEATHER, h));
+      solid.setAttribute('height', solidH);
+      fade.setAttribute('y', CY + solidH);
+      fade.setAttribute('height', Math.min(FEATHER, h));
+      grad.setAttribute('y1', CY + solidH);
+      grad.setAttribute('y2', top);
+
+      line.setAttribute('y1', top);
+      line.setAttribute('y2', top);
+
+      // 光带的渐变要跟着矩形平移，否则整条落在渐变末端，会变成一块纯色
+      const th = Math.max(0, Math.min(76, h));
+      trail.setAttribute('y', top - th);
+      trail.setAttribute('height', th);
+      trailGrad.setAttribute('y1', top - th);
+      trailGrad.setAttribute('y2', top);
+
+      // 扫描线扫过哪个圆点，哪个就跳一下
+      for (const d of dots) {
+        if (d.fired || !d.el || d.cy > top) continue;
+        d.fired = true;
+        d.el.classList.add('pulse');
+        setTimeout(() => d.el.classList.remove('pulse'), 560);
+      }
+
+      if (p >= 1) { finish(); return; }
+      requestAnimationFrame(step);
+    }
+
+    visibleSex = sex;
+    requestAnimationFrame(step);
+  }
+
+  /* 悬停：人体与右侧目录互相点亮，避免「点了一个不知道对应哪条」 */
+  function setHover(id) {
+    const onBody = id && D.systems.some(s => s.id === id) ? id : null;
+    svg.querySelectorAll('g.zone').forEach(z =>
+      z.classList.toggle('on', !!onBody && z.dataset.zone === onBody));
+    svg.querySelectorAll('g.sys').forEach(g =>
+      g.classList.toggle('hot', !!onBody && g.dataset.id === onBody));
+    document.querySelectorAll('.card').forEach(el =>
+      el.classList.toggle('hi', !!id && el.dataset.id === id));
+  }
+
+  /* 反向索引：卡片上的 ◎ 让对应圆点在人体图上脉冲两下。
+     只认识系统名、不知道它在图上哪儿的用户，需要这条路。 */
+  function locateOnBody(id) {
+    const g = svg.querySelector(`g.sys[data-id="${id}"]`);
+    if (!g) return;
+    setHover(id);
+    g.classList.remove('ping');
+    void g.getBoundingClientRect();          // 强制回流，动画能重放
+    g.classList.add('ping');
+    setTimeout(() => g.classList.remove('ping'), 2500);
+    const b = g.getBoundingClientRect();
+    if (b.top < 70 || b.bottom > window.innerHeight - 30) {
+      (g.scrollIntoView ? g : svg).scrollIntoView({ block: 'center', behavior: REDUCE ? 'auto' : 'smooth' });
+    }
+  }
+
+  svg.addEventListener('mouseover', e => {
+    const g = e.target.closest('g.sys');
+    if (g) setHover(g.dataset.id);
+  });  svg.addEventListener('mouseout', e => {
+    const g = e.target.closest('g.sys');
+    if (!g) return;
+    // 在同一个 g 内部从文字移到圆点也会触发 mouseout，这种情况不该熄灭
+    const to = e.relatedTarget && e.relatedTarget.closest ? e.relatedTarget.closest('g.sys') : null;
+    if (to === g) return;
+    setHover(null);
+  });
+  svg.addEventListener('click', e => {
+    const g = e.target.closest('g.sys');
+    if (g) openGraph(g.dataset.id, e.clientX, e.clientY);
+  });
+  svg.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const g = e.target.closest('g.sys');
+    if (!g) return;
+    e.preventDefault();
+    const b = g.getBoundingClientRect();
+    openGraph(g.dataset.id, b.left + b.width / 2, b.top + b.height / 2);
+  });
+
+  /* ---------------- 跳转 ---------------- */
+  let leaving = false;
+
+  /* 主目录是图谱的入口，点击部位/条目就落到中枢的图谱视图，并把这个实体摆在中间。
+     以前这里指向 kg_explorer.html#focus/<id>，那个文件不存在，点了就是 404。 */
+  function graphURL(id) {
+    return 'index.html#graph' + (id ? '?center=' + encodeURIComponent(id) : '');
+  }
+
+  function openGraph(id, x, y) {
+    if (leaving) return;
+    leaving = true;
+    hideSug();
+    if (x != null && !REDUCE) ripple(x, y);
+
+    // 先让当前页「退场」，再换页 —— 否则图谱页加载时中间会白闪一下
+    document.body.classList.add('leaving');
+    setTimeout(() => { location.href = graphURL(id); }, REDUCE ? 0 : 400);
+    setTimeout(() => {
+      leaving = false;
+      document.body.classList.remove('leaving');
+    }, 2600);
+  }
+
+  function leaveTo(url, x, y) {
+    if (leaving) return;
+    leaving = true;
+    hideSug();
+    if (x != null && !REDUCE) ripple(x, y);
+    document.body.classList.add('leaving');
+    setTimeout(() => { location.href = url; }, REDUCE ? 0 : 400);
+    setTimeout(() => { leaving = false; document.body.classList.remove('leaving'); }, 2600);
+  }
+
+  function ripple(x, y) {
+    const r = document.createElement('div');
+    r.className = 'ripple';
+    r.style.left = x + 'px';
+    r.style.top = y + 'px';
+    document.body.appendChild(r);
+    requestAnimationFrame(() => r.classList.add('go'));
+    setTimeout(() => r.remove(), 760);
+  }
+
+  /* ---------------- 右侧目录 ---------------- */
+  /* 一张卡：名称 + 病种数 + 一句说明。
+     说明用「器官/范围」（心脏 · 血管 · 血压）而不是三四个病名——
+     用户扫这一眼是想知道「这个系统管什么」，不是读病历。病名挪进 title。 */
+  function cardHtml(s, i, dim) {
+    const c = dim ? SYS_NEUTRAL : colOf(s.id);
+    const sub = dim ? (s.d || '') : (s.tip || '');
+    const tip = [s.n, s.c + ' 个病种', s.tip || s.d, (s.eg || []).length ? '代表：' + s.eg.join('、') : '']
+      .filter(Boolean).join('｜');
+    return `<button class="card${dim ? ' dim' : ''}" data-id="${esc(s.id)}"
+        style="--i:${i};--c:${c}" title="${esc(tip)}">
+        <span class="ch"><span class="cn">${esc(s.n)}</span><span class="cc">${s.c}</span></span>
+        <span class="cg">${esc(sub)}</span>
+        ${dim ? '' : `<span class="loc" data-locate="${esc(s.id)}" title="在人体图上定位">◎</span>`}
+        <span class="ca">→</span>
+      </button>`;
+  }
+
+  function renderCards() {
+    const list = D.systems.slice().sort((a, b) => b.c - a.c);
+    $('#cards').innerHTML = list.map((s, i) => cardHtml(s, i, false)).join('');
+  }
+
+  function renderRows() {
+    const list = D.systemic.slice().sort((a, b) => b.c - a.c);
+    $('#rows').innerHTML = list.map((s, i) => cardHtml(s, i + 3, true)).join('');
+  }
+
+  /* 右侧两块加起来就是顶部的「病种」总数。不写出来，908/221 和 1,129 对不上眼。 */
+  function renderSumNote() {
+    const st = D.stats || {};
+    const body = st.bodyDis || D.systems.reduce((a, s) => a + s.c, 0);
+    const sys = st.sysDis || D.systemic.reduce((a, s) => a + s.c, 0);
+    const total = st.dis || body + sys;
+    const n = v => v.toLocaleString('en-US');
+    $('#sumNote').innerHTML =
+      `部位 <b>${n(body)}</b> + 全身 <b>${n(sys)}</b> = 顶部「病种」<b>${n(total)}</b>：`
+      + `同一个病只归一处，所以不重复计数`;
+  }
+
+  const MODS = [
+    {
+      ic: '◎', bg: '#eef5fb', fg: '#0f6ab4',
+      n: '完整知识图谱', d: '7,699 实体 / 12,057 关系，可缩放、搜索、逐跳展开',
+      href: 'index.html#graph'
+    },
+    {
+      ic: '▤', bg: '#fdf1ea', fg: '#d9480f',
+      n: '知识库全文', d: '5,600 余段正文，按章节检索与溯源',
+      href: 'index.html#kb'
+    },
+    {
+      ic: '◈', bg: '#eefaf6', fg: '#0ca678',
+      n: '智能问答', d: '证据约束生成 + 逐句审计，答案可溯源到原文',
+      href: 'index.html#ask'
+    },
+    {
+      ic: '◍', bg: '#f3f2fb', fg: '#5f3dc4',
+      n: '数据概览', d: '三层数据来源、抽取流程与已知局限',
+      href: 'index.html#overview'
+    }
+  ];
+
+  function renderMods() {
+    $('#mods').innerHTML = MODS.map((m, i) =>
+      `<${m.href ? 'a' : 'button'} class="mod" style="--i:${i + 5}" ` +
+      `${m.href ? `href="${m.href}"` : `data-modal="${m.modal}"`}>
+        <span class="mi" style="background:${m.bg};color:${m.fg}">${m.ic}</span>
+        <span class="mt"><span class="mn">${m.n}</span><span class="md">${m.d}</span></span>
+        <span class="ma">→</span>
+      </${m.href ? 'a' : 'button'}>`
+    ).join('');
+  }
+
+  document.addEventListener('click', e => {
+    // 卡片上的「定位」按钮先拦下来，否则会冒泡成「打开图谱」
+    const loc = e.target.closest('[data-locate]');
+    if (loc) { e.preventDefault(); locateOnBody(loc.dataset.locate); return; }
+
+    const el = e.target.closest('[data-id]');
+    if (el && !svg.contains(el)) { openGraph(el.dataset.id, e.clientX, e.clientY); return; }
+
+    const m = e.target.closest('[data-modal]');
+    if (m) { openModal(m.dataset.modal); return; }
+
+    // 模块里的外链也走同样的退场，按着修饰键时交给浏览器自己开新标签
+    const a = e.target.closest('a.mod[href]');
+    if (a && !(e.metaKey || e.ctrlKey || e.shiftKey)) {
+      e.preventDefault();
+      leaveTo(a.getAttribute('href'), e.clientX, e.clientY);
+    }
+  });
+
+  // 目录条 ↔ 人体圆点：悬停任意一侧，另一侧跟着亮
+  document.addEventListener('mouseover', e => {
+    const el = e.target.closest('.card,.row');
+    if (el) setHover(el.dataset.id);
+  });
+  document.addEventListener('mouseout', e => {
+    const el = e.target.closest('.card,.row');
+    if (!el) return;
+    const to = e.relatedTarget && e.relatedTarget.closest ? e.relatedTarget.closest('.card,.row') : null;
+    if (to === el) return;
+    setHover(null);
+  });
+
+  /* ---------------- 搜索 ---------------- */
+  const qEl = $('#q'), sugEl = $('#sug');
+  let active = -1, hits = [];
+
+  const TYPE_COLOR = {};
+  D.types.forEach(t => { TYPE_COLOR[t.t] = t.color; });
+  const typeLabel = t => (D.types.find(x => x.t === t) || {}).label || t;
+  const TYPE_ORDER = { Disease: 0, Drug: 1, Symptom: 2, Pathogen: 3, Vaccine: 4 };
+
+  function search(term) {
+    const t = term.trim().toLowerCase();
+    if (!t) return [];
+    const out = [];
+    for (const [id, name, ty] of D.idx) {
+      const n = name.toLowerCase();
+      const at = n.indexOf(t);
+      if (at < 0 && id.toLowerCase().indexOf(t) < 0) continue;
+      let rank = at === 0 ? 0 : at > 0 ? 1 : 2;
+      out.push({ id, name, ty, rank, len: name.length });
+    }
+    // 同名实体优先给「疾病」，其次药品、症状，再其它
+    out.sort((a, b) =>
+      a.rank - b.rank ||
+      (TYPE_ORDER[a.ty] ?? 9) - (TYPE_ORDER[b.ty] ?? 9) ||
+      a.len - b.len);
+    return out.slice(0, 9);
+  }
+
+  function hideSug() { sugEl.hidden = true; active = -1; }
+
+  function renderSug(term) {
+    hits = search(term);
+    active = -1;
+    if (!term.trim()) { hideSug(); return; }
+    if (!hits.length) {
+      sugEl.innerHTML = '<div class="empty">图谱里没有匹配的实体</div>';
+      sugEl.hidden = false;
+      return;
+    }
+    const groups = new Map();
+    for (const h of hits) {
+      if (!groups.has(h.ty)) groups.set(h.ty, []);
+      groups.get(h.ty).push(h);
+    }
+    let html = '';
+    for (const [ty, arr] of groups) {
+      html += `<div class="sg-h">${esc(typeLabel(ty))}</div>`;
+      html += arr.map(h => {
+        const i = hits.indexOf(h);
+        return `<div class="sg" data-hit="${i}" style="--i:${i}">
+          <span class="d" style="background:${TYPE_COLOR[h.ty] || '#868e96'}"></span>
+          <span class="n">${esc(h.name)}</span>
+          <span class="go">→</span>
+        </div>`;
+      }).join('');
+    }
+    sugEl.innerHTML = html;
+    sugEl.hidden = false;
+  }
+
+  qEl.addEventListener('input', () => renderSug(qEl.value));
+  qEl.addEventListener('focus', () => { if (qEl.value.trim()) renderSug(qEl.value); });
+  qEl.addEventListener('keydown', e => {
+    const items = [...sugEl.querySelectorAll('.sg')];
+    if (e.key === 'Escape') { hideSug(); qEl.blur(); return; }
+    if (!items.length) {
+      if (e.key === 'Enter') {
+        const one = search(qEl.value)[0];
+        if (one) openGraph(one.id);
+      }
+      return;
+    }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      active = (active + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
+      items.forEach((el, i) => el.classList.toggle('on', i === active));
+      items[active].scrollIntoView({ block: 'nearest' });
+      return;
+    }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const pickIdx = active >= 0 ? +items[active].dataset.hit : +items[0].dataset.hit;
+      const b = qEl.getBoundingClientRect();
+      openGraph(hits[pickIdx].id, b.left + 24, b.bottom);
+    }
+  });
+
+  sugEl.addEventListener('mousedown', e => {
+    const el = e.target.closest('.sg');
+    if (!el) return;
+    e.preventDefault();
+    openGraph(hits[+el.dataset.hit].id, e.clientX, e.clientY);
+  });
+
+  document.addEventListener('mousedown', e => {
+    if (!e.target.closest('#searchWrap')) hideSug();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && document.activeElement !== qEl) {
+      e.preventDefault();
+      qEl.focus();
+      qEl.select();
+    }
+  });
+
+  /* ---------------- 弹层 ---------------- */
+  const modal = $('#modal');
+  const M = {
+    qa: {
+      title: '启动智能问答',
+      desc: '问答服务依赖本地 Python 进程（保持零依赖，纯标准库）。在终端里启动后，浏览器会打开 http://127.0.0.1:8848，右上角「模型设置」填 API Key 即可接入真实模型；不填也能用离线证据摘录模式跑通全流程。',
+      code: 'cd C:\\Users\\21376\\WorkBuddy\\2026-11-06-20-47-15\\medical-qa\npython server.py'
+    }
+  };
+
+  function openModal(key) {
+    const m = M[key];
+    if (!m) return;
+    $('#mTitle').textContent = m.title;
+    $('#mDesc').textContent = m.desc;
+    $('#mCode').textContent = m.code;
+    modal.hidden = false;
+  }
+  modal.addEventListener('click', e => {
+    if (e.target.hasAttribute('data-close') || e.target.closest('[data-close]')) modal.hidden = true;
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !modal.hidden) modal.hidden = true;
+  });
+  $('#mCopy').addEventListener('click', () => {
+    const text = $('#mCode').textContent;
+    const done = () => toast('命令已复制');
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else fallback();
+    function fallback() {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;opacity:0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); done(); } catch (_) { toast('复制失败，请手动选中'); }
+      ta.remove();
+    }
+  });
+
+  /* ---------------- 杂项 ---------------- */
+  let toastTimer;
+  function toast(msg) {
+    const el = $('#toast');
+    el.textContent = msg;
+    el.classList.add('on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('on'), 2200);
+  }
+
+  /* 分段控件：白色滑块在男/女之间滑过去，比直接换底色顺 */
+  const seg = $('#seg');
+  const thumb = seg.querySelector('.seg-thumb');
+
+  function moveThumb(btn, animate) {
+    if (!btn || !thumb) return;
+    if (!animate) thumb.style.transition = 'none';
+    thumb.style.width = btn.offsetWidth + 'px';
+    thumb.style.transform = `translateX(${btn.offsetLeft - 2}px)`;
+    if (!animate) {
+      void thumb.offsetWidth;          // 强制回流，让下一次改动能正常过渡
+      thumb.style.transition = '';
+    }
+  }
+
+  seg.addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (!b || b.classList.contains('on')) return;
+    seg.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    moveThumb(b, true);
+    setHover(null);
+    setSex(b.dataset.sex);
+  });
+
+  let rzTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(rzTimer);
+    rzTimer = setTimeout(() => moveThumb(seg.querySelector('button.on'), false), 120);
+  });
+  // 字体加载完按钮宽度可能变一点，滑块要跟着对一次
+  window.addEventListener('load', () => moveThumb(seg.querySelector('button.on'), false));
+
+  $('#allBtn').addEventListener('click', e => leaveTo(graphURL(''), e.clientX, e.clientY));
+
+  /* 顶栏统计数字：从 0 滚到目标值 */
+  const fmt = n => Number(n).toLocaleString('en-US');
+  const counting = [];
+
+  function countUp(el, target) {
+    if (REDUCE || !target) { el.textContent = fmt(target || 0); return; }
+    const job = { el, target, done: false };
+    counting.push(job);
+    const t0 = performance.now(), dur = 820;
+    (function step(now) {
+      if (job.done) return;
+      const p = Math.min(1, (now - t0) / dur);
+      el.textContent = fmt(Math.round(target * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) requestAnimationFrame(step); else job.done = true;
+    })(t0);
+  }
+
+  function flushCounts() {
+    for (const j of counting) {
+      if (j.done) continue;
+      j.el.textContent = fmt(j.target);
+      j.done = true;
+    }
+  }
+
+  /* ---------------- 启动 ---------------- */
+  buildStage();
+  setSex('m', true);
+  renderCards();
+  renderRows();
+  renderSumNote();
+  renderMods();
+
+  moveThumb(seg.querySelector('button.on'), false);
+  countUp($('#stEnt'), D.stats.ent);
+  countUp($('#stRel'), D.stats.rel);
+  countUp($('#stDis'), D.stats.dis);
+  countUp($('#cBody'), D.stats.bodyDis);
+  countUp($('#cSys'), D.stats.sysDis);
+  $('#fSrc').textContent = D.meta.src;
+  $('#fDate').textContent = D.meta.date;
+
+  // 入场动画最多占 1.5s；超过就强制归位，杜绝「网格里一片空白」
+  setTimeout(() => {
+    document.body.classList.add('revealed');
+    flushCounts();
+  }, 1500);
+})();
+
+</script>
+<script>
+  /* 顶栏「外观」按钮 + 人体图配色跟随明暗
+   *
+   * 人体图那圈系统标签是 SVG 元素，这里不能用 CSS —— 同一份样式表里
+   * 写在 HTML 元素上的深色规则生效、写到 `.stage g.sys .pill` 上却不生效
+   * （选择器 matches 为真、computed fill 仍是白色）。改为渲染后直接写内联样式，
+   * 既稳又不依赖导出顺序；切换性别重建 SVG 时 MutationObserver 会再刷一次。
+   */
+  (function () {
+    var b = document.getElementById('bgBtn');
+    if (b) b.onclick = function () { if (window.BGTheme) window.BGTheme.open(); };
+
+    function isDark() { return document.body.classList.contains('dark-bg'); }
+
+    function paintMap() {
+      var dark = isDark();
+      var groups = document.querySelectorAll('.stage g.sys');
+      for (var i = 0; i < groups.length; i++) {
+        var g = groups[i];
+        var pill = g.querySelector('.pill');
+        var nm = g.querySelector('.nm');
+        var pd = g.querySelector('.pd');
+        if (pill) {
+          pill.style.fill = dark ? 'rgba(26,35,48,.94)' : '';
+          pill.style.stroke = dark ? 'rgba(255,255,255,.16)' : '';
+        }
+        if (nm) nm.style.fill = dark ? '#dfe8f2' : '';
+        if (pd) pd.style.fill = dark ? '#8291a3' : '';
+      }
+      var leads = document.querySelectorAll('.stage .lead');
+      for (var k = 0; k < leads.length; k++) {
+        leads[k].style.stroke = dark ? 'rgba(255,255,255,.22)' : '';
+      }
+      var zones = document.querySelectorAll('.stage g.zone ellipse');
+      for (var z = 0; z < zones.length; z++) {
+        zones[z].style.fill = dark ? 'rgba(90,168,232,.14)' : '';
+        zones[z].style.stroke = dark ? 'rgba(124,188,240,.4)' : '';
+      }
+    }
+
+    document.addEventListener('bgchange', paintMap);
+
+    var stage = document.getElementById('stage');
+    if (stage && window.MutationObserver) {
+      new MutationObserver(paintMap).observe(stage, { childList: true, subtree: true });
+    }
+    setTimeout(paintMap, 300);
+    setTimeout(paintMap, 1200);
+  })();
+</script>
+</body>
+</html>

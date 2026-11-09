@@ -1,0 +1,25 @@
+# Python 缓存
+__pycache__/
+*.py[cod]
+*.pyo
+
+# 数据构建的临时产物（不需要推送到云端）
+data/_zh_batch*.json
+data/_zh_batch[A-C].json
+data/_zh_mismatch.json
+data/_zh_todo.json
+data/_trans_A.txt
+data/_translate_batch_A.txt
+
+# 本地运行产生的配置/反馈（云端每次重启重置，不应入库）
+data/ai_config.json
+data/ui_profile.json
+data/ai_feedback.db
+
+# 环境变量（不要提交 API Key）
+.env
+.env.local
+
+# 系统文件
+.DS_Store
+Thumbs.db
